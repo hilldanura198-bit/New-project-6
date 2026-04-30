@@ -15,6 +15,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _navIndex = 0;
 
+  String _getUserName() {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null && user.email != null) {
+      return user.email!.split('@')[0];
+    }
+    return 'User';
+  }
+
   Stream<List<Map<String, dynamic>>> _artworksStream() {
     return Supabase.instance.client
         .from('artworks')
@@ -24,51 +32,90 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFDFBF7),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('ARSIVA Collection', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 8),
-              Text(
-                'Pilihan karya seni kurasi premium untuk kolektor modern.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: StreamBuilder<List<Map<String, dynamic>>>(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hey, ${_getUserName()}',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const Text(
+                          'Explore, Discover, Enjoy',
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                    const CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.black12,
+                      child: Icon(Icons.person, color: Colors.black54),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search by artist or title',
+                    prefixIcon: const Icon(Icons.search),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  'Featured Artists',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  height: 160,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildArtistItem('Van Gogh', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/vangogh_profile.jpg'),
+                      _buildArtistItem('Claude Monet', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/monet_profile.jpg'),
+                      _buildArtistItem('Leonardo', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/davinci_profile.jpg'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  'Artworks',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 15),
+                StreamBuilder<List<Map<String, dynamic>>>(
                   stream: _artworksStream(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Gagal memuat galeri: ${snapshot.error}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    }
-
                     final artworks = snapshot.data ?? const [];
-                    if (artworks.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'Belum ada karya di tabel artworks.',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      );
-                    }
-
+                    
                     return MasonryGridView.count(
                       crossAxisCount: 2,
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 14,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: artworks.length,
                       itemBuilder: (context, index) {
                         return ArtworkCard(artwork: artworks[index]);
@@ -76,8 +123,9 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-              ),
-            ],
+                const SizedBox(height: 100),
+              ],
+            ),
           ),
         ),
       ),
@@ -88,6 +136,39 @@ class _HomePageState extends State<HomePage> {
             _navIndex = index;
           });
         },
+      ),
+    );
+  }
+
+  Widget _buildArtistItem(String name, String imageUrl) {
+    return Container(
+      width: 110,
+      margin: const EdgeInsets.only(right: 15),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(50),
+              topRight: Radius.circular(50),
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+            child: Image.network(
+              imageUrl,
+              height: 120,
+              width: 100,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                height: 120,
+                width: 100,
+                color: Colors.grey[300],
+                child: const Icon(Icons.broken_image),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+        ],
       ),
     );
   }
@@ -147,7 +228,7 @@ class _ArtworkCardState extends State<ArtworkCard> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.95),
+                    color: Colors.white.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(18),
                   ),
                   child: Row(
@@ -161,8 +242,7 @@ class _ArtworkCardState extends State<ArtworkCard> {
                         scale: 0.78,
                         child: Switch(
                           value: _previewMode,
-                          activeThumbColor: AppTheme.primaryBlue,
-                          activeTrackColor: AppTheme.primaryBlue.withValues(alpha: 0.45),
+                          activeTrackColor: AppTheme.primaryBlue,
                           onChanged: (value) {
                             setState(() {
                               _previewMode = value;
@@ -181,7 +261,10 @@ class _ArtworkCardState extends State<ArtworkCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  title, 
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
+                ),
                 const SizedBox(height: 4),
                 Text(artist, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 10),
