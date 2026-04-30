@@ -14,6 +14,14 @@ class AppTheme {
         primary: primaryBlue,
         surface: background,
       ),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(34),
+        ),
+        shadowColor: Colors.black.withValues(alpha: 0.08),
+      ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.playfairDisplay(
           fontSize: 42,
@@ -37,6 +45,33 @@ class AppTheme {
           fontWeight: FontWeight.w400,
           color: Colors.black87,
           height: 1.4,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: const BorderSide(color: primaryBlue, width: 1.2),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: primaryBlue,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
         ),
       ),
     );
