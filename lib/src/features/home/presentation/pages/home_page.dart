@@ -161,7 +161,8 @@ class _ArtworkCardState extends State<ArtworkCard> {
                         scale: 0.78,
                         child: Switch(
                           value: _previewMode,
-                          activeColor: AppTheme.primaryBlue,
+                          activeThumbColor: AppTheme.primaryBlue,
+                          activeTrackColor: AppTheme.primaryBlue.withValues(alpha: 0.45),
                           onChanged: (value) {
                             setState(() {
                               _previewMode = value;
