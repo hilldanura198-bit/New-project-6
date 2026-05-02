@@ -10,6 +10,8 @@ import '../../../artwork/presentation/widgets/favorite_heart_button.dart';
 import '../../../favorites/presentation/pages/favorites_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
 import '../../../scan/presentation/pages/scan_page.dart';
+import '../../../search/presentation/providers/artwork_search_provider.dart';
+import '../../../search/presentation/widgets/artwork_search_filter_bar.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -29,12 +31,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     return 'User';
   }
 
-  Stream<List<Map<String, dynamic>>> _artworksStream() {
-    return Supabase.instance.client
-        .from('artworks')
-        .stream(primaryKey: ['id']).order('created_at', ascending: false);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,10 +38,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: IndexedStack(
         index: _navIndex,
         children: [
-          _HomeFeed(
-            userName: _getUserName(),
-            artworksStream: _artworksStream(),
-          ),
+          _HomeFeed(userName: _getUserName()),
           const FavoritesPage(),
           const ProfilePage(),
         ],
@@ -86,14 +79,42 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 }
 
-class _HomeFeed extends StatelessWidget {
-  const _HomeFeed({required this.userName, required this.artworksStream});
+class _HomeFeed extends ConsumerStatefulWidget {
+  const _HomeFeed({required this.userName});
 
   final String userName;
-  final Stream<List<Map<String, dynamic>>> artworksStream;
+
+  @override
+  ConsumerState<_HomeFeed> createState() => _HomeFeedState();
+}
+
+class _HomeFeedState extends ConsumerState<_HomeFeed> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final searchState = ref.watch(artworkSearchProvider);
+    final searchNotifier = ref.read(artworkSearchProvider.notifier);
+
+    if (_searchController.text != searchState.query) {
+      _searchController.value = TextEditingValue(
+        text: searchState.query,
+        selection: TextSelection.collapsed(offset: searchState.query.length),
+      );
+    }
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -108,7 +129,7 @@ class _HomeFeed extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hey, $userName',
+                        'Hey, ${widget.userName}',
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -126,101 +147,56 @@ class _HomeFeed extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 20),
+              ArtworkSearchFilterBar(
+                controller: _searchController,
+                onQueryChanged: searchNotifier.setQuery,
+                categories: searchState.categories,
+                artists: searchState.artists,
+                selectedCategory: searchState.selectedCategory,
+                selectedArtist: searchState.selectedArtist,
+                onCategoryChanged: searchNotifier.setCategory,
+                onArtistChanged: searchNotifier.setArtist,
+                onClear: searchNotifier.clearFilters,
+              ),
               const SizedBox(height: 24),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search by artist or title',
-                  prefixIcon: const Icon(Icons.search),
-                  filled: true,
-                  fillColor: Theme.of(context).cardColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'Featured Artists',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 15),
-              SizedBox(
-                height: 160,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _buildArtistItem('Van Gogh', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/vangogh_profile.jpg'),
-                    _buildArtistItem('Claude Monet', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/monet_profile.jpg'),
-                    _buildArtistItem('Leonardo', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/davinci_profile.jpg'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-              const Text(
+              Text(
                 'Artworks',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 15),
-              StreamBuilder<List<Map<String, dynamic>>>(
-                stream: artworksStream,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  final artworks = snapshot.data ?? const [];
-
-                  return MasonryGridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: artworks.length,
-                    itemBuilder: (context, index) {
-                      return ArtworkCard(artwork: artworks[index]);
-                    },
-                  );
-                },
+              const SizedBox(height: 10),
+              if (searchState.error != null)
+                Text(searchState.error!, style: const TextStyle(color: Colors.redAccent)),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: searchState.filteredArtworks.isEmpty
+                    ? Padding(
+                        key: const ValueKey<String>('empty'),
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                          child: Text(
+                            'No artworks match your current filters.',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                      )
+                    : MasonryGridView.count(
+                        key: ValueKey<int>(searchState.filteredArtworks.length),
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 14,
+                        crossAxisSpacing: 14,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: searchState.filteredArtworks.length,
+                        itemBuilder: (context, index) {
+                          return ArtworkCard(artwork: searchState.filteredArtworks[index]);
+                        },
+                      ),
               ),
               const SizedBox(height: 100),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildArtistItem(String name, String imageUrl) {
-    return Container(
-      width: 110,
-      margin: const EdgeInsets.only(right: 15),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(50),
-              topRight: Radius.circular(50),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-            child: Image.network(
-              imageUrl,
-              height: 120,
-              width: 100,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                height: 120,
-                width: 100,
-                color: Colors.grey[300],
-                child: const Icon(Icons.broken_image),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-        ],
       ),
     );
   }
