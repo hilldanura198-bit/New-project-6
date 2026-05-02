@@ -21,9 +21,20 @@ class PremiumUploadField extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeOut,
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x10000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: TextFormField(
         controller: controller,
@@ -32,6 +43,10 @@ class PremiumUploadField extends StatelessWidget {
         validator: validator,
         decoration: InputDecoration(
           labelText: label,
+          floatingLabelStyle: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.w600,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,

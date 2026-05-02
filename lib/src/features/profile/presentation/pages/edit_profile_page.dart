@@ -95,63 +95,73 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             child: SingleChildScrollView(
               key: ValueKey<String>(profile.avatarUrl ?? 'none'),
               padding: const EdgeInsets.all(20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 52,
-                          backgroundColor: Colors.black12,
-                          backgroundImage: avatarProvider,
-                          child: avatarProvider == null
-                              ? const Icon(Icons.person_rounded, size: 52)
-                              : null,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: IconButton.filled(
-                            onPressed: _pickImage,
-                            icon: const Icon(Icons.camera_alt_rounded),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
+                  ),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 52,
+                            backgroundColor: Colors.black12,
+                            backgroundImage: avatarProvider,
+                            child: avatarProvider == null
+                                ? const Icon(Icons.person_rounded, size: 52)
+                                : null,
                           ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: IconButton.filled(
+                              onPressed: _pickImage,
+                              icon: const Icon(Icons.camera_alt_rounded),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
+                        validator: (value) {
+                          final text = value?.trim() ?? '';
+                          if (text.length < 3) {
+                            return 'Username must be at least 3 characters.';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        final text = value?.trim() ?? '';
-                        if (text.length < 3) {
-                          return 'Username must be at least 3 characters.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: _bioController,
-                      maxLines: 4,
-                      maxLength: 200,
-                      decoration: const InputDecoration(
-                        labelText: 'Bio (optional)',
-                        alignLabelWithHint: true,
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _bioController,
+                        maxLines: 4,
+                        maxLength: 200,
+                        decoration: const InputDecoration(
+                          labelText: 'Bio (optional)',
+                          alignLabelWithHint: true,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 22),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: _save,
-                        child: const Text('Save Changes'),
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: _save,
+                          child: const Text('Save Changes'),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

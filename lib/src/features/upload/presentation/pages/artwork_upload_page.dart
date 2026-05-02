@@ -180,6 +180,9 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                       offset: Offset(0, 10),
                     ),
                   ],
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(14),
@@ -229,6 +232,13 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                 ),
               ),
               const SizedBox(height: 14),
+              Text(
+                'Artwork Information',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 10),
               PremiumUploadField(
                 controller: _titleController,
                 label: 'Title',

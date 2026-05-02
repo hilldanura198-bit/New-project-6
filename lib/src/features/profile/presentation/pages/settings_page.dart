@@ -35,6 +35,9 @@ class SettingsPage extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               color: Theme.of(context).cardColor,
+              border: Border.all(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,6 +59,9 @@ class SettingsPage extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               color: Theme.of(context).cardColor,
+              border: Border.all(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,13 +69,18 @@ class SettingsPage extends ConsumerWidget {
                 Text('Account', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 12),
                 ListTile(
-                  contentPadding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  tileColor: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.6),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   leading: const Icon(Icons.person_outline_rounded),
                   title: Text(profile?.username ?? '-'),
                   subtitle: const Text('Username'),
                 ),
+                const SizedBox(height: 8),
                 ListTile(
-                  contentPadding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  tileColor: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.6),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   leading: const Icon(Icons.email_outlined),
                   title: Text(profile?.email ?? '-'),
                   subtitle: const Text('Email'),
