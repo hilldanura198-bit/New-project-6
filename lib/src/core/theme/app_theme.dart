@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color background = Color(0xFFFDFBF7);
-  static const Color darkBackground = Color(0xFF111110);
-  static const Color primaryBlue = Color(0xFF0057FF);
+  static const Color darkBackground = Color(0xFF1A1714);
+  static const Color primaryBlue = Color(0xFF2E4A7D);
   static const Color accentGold = Color(0xFFC8A96B);
 
   static ThemeData light() {
@@ -15,14 +15,25 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primaryBlue,
         surface: background,
+        onSurface: Color(0xFF1F1A15),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        titleTextStyle: GoogleFonts.playfairDisplay(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF1F1A15),
+        ),
       ),
       cardTheme: CardThemeData(
-        color: Colors.white,
+        color: const Color(0xFFFFFEFC),
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(34),
         ),
-        shadowColor: Colors.black.withValues(alpha: 0.08),
+        shadowColor: const Color(0x1A2C2218),
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.playfairDisplay(
@@ -39,19 +50,19 @@ class AppTheme {
         bodyLarge: GoogleFonts.montserrat(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: Colors.black87,
+          color: const Color(0xFF2E261D),
           height: 1.4,
         ),
         bodyMedium: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: Colors.black87,
+          color: const Color(0xFF5A4C3D),
           height: 1.4,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: const Color(0xFFF8F3E8),
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(22),
@@ -68,14 +79,23 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: primaryBlue,
-          foregroundColor: Colors.white,
+          backgroundColor: const Color(0xFF2B251E),
+          foregroundColor: const Color(0xFFF5E7CA),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
         ),
       ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: const Color(0xFF3E3224),
+          side: const BorderSide(color: Color(0x33A98653)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        ),
+      ),
+      dividerColor: const Color(0x1FA98653),
     );
   }
 
@@ -86,10 +106,21 @@ class AppTheme {
       scaffoldBackgroundColor: darkBackground,
       colorScheme: const ColorScheme.dark(
         primary: accentGold,
-        surface: Color(0xFF1B1B1A),
+        surface: Color(0xFF25201B),
+        onSurface: Color(0xFFF1E5CC),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        titleTextStyle: GoogleFonts.playfairDisplay(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFFF2E8D4),
+        ),
       ),
       cardTheme: CardThemeData(
-        color: const Color(0xFF1A1A19),
+        color: const Color(0xFF231E19),
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(34),
@@ -110,19 +141,19 @@ class AppTheme {
         bodyLarge: GoogleFonts.montserrat(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: Colors.white,
+          color: const Color(0xFFF1E5CC),
           height: 1.4,
         ),
         bodyMedium: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: Colors.white70,
+          color: const Color(0xFFD2C2A8),
           height: 1.4,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1E1E1C),
+        fillColor: const Color(0xFF2A241E),
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(22),
@@ -137,6 +168,25 @@ class AppTheme {
           borderSide: const BorderSide(color: accentGold, width: 1.2),
         ),
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: const Color(0xFFC8A96B),
+          foregroundColor: const Color(0xFF1C1713),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: const Color(0xFFF1E5CC),
+          side: const BorderSide(color: Color(0x4DC8A96B)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        ),
+      ),
+      dividerColor: const Color(0x33C8A96B),
     );
   }
 }

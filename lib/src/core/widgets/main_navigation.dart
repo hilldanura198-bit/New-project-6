@@ -17,11 +17,13 @@ class MainNavigation extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(18, 0, 18, 18),
       decoration: BoxDecoration(
-        color: AppTheme.primaryBlue,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF29221B)
+            : const Color(0xFF2D261E),
         borderRadius: BorderRadius.circular(24),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x220057FF),
+            color: Color(0x2632281F),
             blurRadius: 24,
             offset: Offset(0, 10),
           ),
@@ -39,7 +41,7 @@ class MainNavigation extends StatelessWidget {
         child: NavigationBar(
           height: 70,
           backgroundColor: Colors.transparent,
-          indicatorColor: Colors.white.withValues(alpha: 0.18),
+          indicatorColor: AppTheme.accentGold.withValues(alpha: 0.22),
           selectedIndex: currentIndex,
           onDestinationSelected: onTap,
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
