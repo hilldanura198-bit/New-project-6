@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../editing/presentation/pages/artwork_editing_page.dart';
 import '../widgets/favorite_heart_button.dart';
 
 class ArtworkDetailPage extends StatelessWidget {
@@ -51,6 +52,30 @@ class ArtworkDetailPage extends StatelessWidget {
                   Text(
                     description,
                     style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder<void>(
+                            transitionDuration: const Duration(milliseconds: 280),
+                            pageBuilder: (context, animation, secondaryAnimation) {
+                              return FadeTransition(
+                                opacity: CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeOut,
+                                ),
+                                child: ArtworkEditingPage(artwork: artwork),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.tune_rounded),
+                      label: const Text('Edit Artwork'),
+                    ),
                   ),
                 ],
               ),

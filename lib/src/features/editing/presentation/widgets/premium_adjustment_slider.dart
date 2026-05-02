@@ -18,7 +18,7 @@ class PremiumAdjustmentSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final normalized = ((value - min) / (max - min)).clamp(0, 1);
+    final normalized = ((value - min) / (max - min)).clamp(0.0, 1.0).toDouble();
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
