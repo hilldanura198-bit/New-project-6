@@ -22,7 +22,7 @@ class ProfileRepository {
     final user = _currentUser;
     final response = await _client
         .from('profiles')
-        .select('id,email,username,bio,avatar_url')
+        .select('id,email,username,bio,avatar_url,role')
         .eq('id', user.id)
         .maybeSingle();
 
@@ -33,6 +33,7 @@ class ProfileRepository {
         'email': user.email,
         'username': fallbackUsername,
         'bio': '',
+        'role': 'user',
       });
 
       return UserProfile(
@@ -41,6 +42,7 @@ class ProfileRepository {
         username: fallbackUsername,
         bio: '',
         avatarUrl: null,
+        role: 'user',
       );
     }
 

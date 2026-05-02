@@ -5,6 +5,7 @@ class UserProfile {
     required this.username,
     required this.bio,
     required this.avatarUrl,
+    required this.role,
   });
 
   final String id;
@@ -12,6 +13,7 @@ class UserProfile {
   final String username;
   final String bio;
   final String? avatarUrl;
+  final String role;
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
@@ -20,6 +22,7 @@ class UserProfile {
       username: (map['username'] ?? '').toString(),
       bio: (map['bio'] ?? '').toString(),
       avatarUrl: map['avatar_url']?.toString(),
+      role: (map['role'] ?? 'user').toString(),
     );
   }
 
@@ -27,6 +30,7 @@ class UserProfile {
     String? username,
     String? bio,
     String? avatarUrl,
+    String? role,
   }) {
     return UserProfile(
       id: id,
@@ -34,6 +38,7 @@ class UserProfile {
       username: username ?? this.username,
       bio: bio ?? this.bio,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      role: role ?? this.role,
     );
   }
 }
