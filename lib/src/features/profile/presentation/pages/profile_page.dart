@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../upload/presentation/pages/artwork_upload_page.dart';
 import '../providers/profile_provider.dart';
 import 'edit_profile_page.dart';
 import 'settings_page.dart';
@@ -16,6 +17,7 @@ class ProfilePage extends ConsumerWidget {
       body: SafeArea(
         child: profileAsync.when(
           data: (profile) {
+            final isAdmin = profile.role.toLowerCase() == 'admin';
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
               child: Column(
@@ -113,6 +115,23 @@ class ProfilePage extends ConsumerWidget {
                             label: const Text('Edit Profile'),
                           ),
                         ),
+                        if (isAdmin) ...[
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => const ArtworkUploadPage(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.cloud_upload_outlined),
+                              label: const Text('Admin Upload Artwork'),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

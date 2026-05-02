@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../data/models/artwork_upload_draft.dart';
 import '../providers/artwork_upload_provider.dart';
 import '../widgets/premium_upload_field.dart';
@@ -116,13 +117,35 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
 
   @override
   Widget build(BuildContext context) {
+    final profileAsync = ref.watch(userProfileProvider);
     final uploadState = ref.watch(artworkUploadProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final profile = profileAsync.valueOrNull;
+    final isAdmin = profile?.role.toLowerCase() == 'admin';
 
     return Scaffold(
       appBar: AppBar(title: const Text('Upload Artwork')),
       body: SafeArea(
-        child: Form(
+        child: !isAdmin
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.lock_outline_rounded, size: 52),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Admin access required to upload artworks.',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
