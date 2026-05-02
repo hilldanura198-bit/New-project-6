@@ -127,7 +127,20 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Upload Artwork')),
       body: SafeArea(
-        child: !isAdmin
+        child: profileAsync.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : profileAsync.hasError
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        'Unable to verify access right now.',
+                        style: Theme.of(context).textTheme.titleMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : !isAdmin
             ? Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
@@ -145,7 +158,7 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                   ),
                 ),
               )
-            : Form(
+                : Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
