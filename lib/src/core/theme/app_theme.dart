@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color background = Color(0xFFFDFBF7);
+  static const Color darkBackground = Color(0xFF111110);
   static const Color primaryBlue = Color(0xFF0057FF);
+  static const Color accentGold = Color(0xFFC8A96B);
 
   static ThemeData light() {
     final base = ThemeData.light(useMaterial3: true);
@@ -72,6 +74,67 @@ class AppTheme {
             borderRadius: BorderRadius.circular(28),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
+        ),
+      ),
+    );
+  }
+
+  static ThemeData dark() {
+    final base = ThemeData.dark(useMaterial3: true);
+
+    return base.copyWith(
+      scaffoldBackgroundColor: darkBackground,
+      colorScheme: const ColorScheme.dark(
+        primary: accentGold,
+        surface: Color(0xFF1B1B1A),
+      ),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF1A1A19),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(34),
+        ),
+      ),
+      textTheme: TextTheme(
+        displayLarge: GoogleFonts.playfairDisplay(
+          fontSize: 42,
+          fontWeight: FontWeight.w600,
+          height: 1.1,
+          color: Colors.white,
+        ),
+        headlineMedium: GoogleFonts.playfairDisplay(
+          fontSize: 30,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+        bodyLarge: GoogleFonts.montserrat(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
+          height: 1.4,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: Colors.white70,
+          height: 1.4,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF1E1E1C),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: const BorderSide(color: accentGold, width: 1.2),
         ),
       ),
     );
