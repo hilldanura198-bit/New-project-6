@@ -62,6 +62,9 @@ class ProfilePage extends ConsumerWidget {
                           offset: Offset(0, 12),
                         ),
                       ],
+                      border: Border.all(
+                        color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
+                      ),
                     ),
                     child: Column(
                       children: [

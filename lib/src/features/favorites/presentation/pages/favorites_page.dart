@@ -81,6 +81,35 @@ class FavoritesPage extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
+                                const Positioned.fill(
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Color(0x10000000),
+                                          Color(0x00000000),
+                                          Color(0x96000000),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 10,
+                                  right: 44,
+                                  bottom: 10,
+                                  child: Text(
+                                    (artwork['title'] ?? 'Untitled').toString(),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: const Color(0xFFF6E8CB),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                ),
                                 Positioned(
                                   top: 8,
                                   right: 8,

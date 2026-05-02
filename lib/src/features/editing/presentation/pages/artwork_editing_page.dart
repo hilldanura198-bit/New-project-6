@@ -85,7 +85,7 @@ class ArtworkEditingPage extends ConsumerWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(28),
                   child: ColoredBox(
-                    color: const Color(0xFF111110),
+                    color: const Color(0xFF211A14),
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
@@ -106,7 +106,7 @@ class ArtworkEditingPage extends ConsumerWidget {
                           top: 14,
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.48),
+                              color: const Color(0x8A1F1812),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: const Padding(

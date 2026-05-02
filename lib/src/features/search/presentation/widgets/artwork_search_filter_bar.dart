@@ -33,6 +33,9 @@ class ArtworkSearchFilterBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
+        ),
         boxShadow: const [
           BoxShadow(
             color: Color(0x12000000),
@@ -114,6 +117,9 @@ class ArtworkSearchFilterBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.35),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(

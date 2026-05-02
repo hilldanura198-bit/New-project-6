@@ -9,7 +9,6 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFBF7),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
@@ -21,15 +20,14 @@ class OnboardingPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 4.5,
-                      color: Colors.black,
                     ),
               ),
-              const Text(
+              Text(
                 'GALLERY ART',
                 style: TextStyle(
                   fontSize: 12,
                   letterSpacing: 3.5,
-                  color: Colors.black54,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -45,15 +43,14 @@ class OnboardingPage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
                     ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Jelajahi kurasi karya seni terbaik dunia dalam genggaman Anda dengan pengalaman visual yang eksklusif.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black45,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 15,
                   height: 1.5,
                 ),
@@ -71,7 +68,6 @@ class OnboardingPage extends StatelessWidget {
                     );
                   },
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -82,7 +78,6 @@ class OnboardingPage extends StatelessWidget {
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.1,
-                      color: Colors.white,
                     ),
                   ),
                 ),

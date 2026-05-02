@@ -109,9 +109,9 @@ class _ScanPageState extends ConsumerState<ScanPage>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withValues(alpha: 0.62),
+                      const Color(0xCC1D1712),
                       Colors.transparent,
-                      Colors.black.withValues(alpha: 0.66),
+                      const Color(0xD9251E17),
                     ],
                   ),
                 ),
@@ -175,7 +175,7 @@ class _ScanPageState extends ConsumerState<ScanPage>
                         child: FilledButton(
                           onPressed: scanState.isScanning ? null : _scan,
                           style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xCC111110),
+                            backgroundColor: const Color(0xCC2C241B),
                             foregroundColor: const Color(0xFFF6E8CB),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
