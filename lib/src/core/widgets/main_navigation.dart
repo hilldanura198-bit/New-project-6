@@ -50,9 +50,9 @@ class MainNavigation extends StatelessWidget {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.grid_view_rounded, color: Colors.white),
-              selectedIcon: Icon(Icons.grid_on_rounded, color: Colors.white),
-              label: 'Gallery',
+              icon: Icon(Icons.favorite_border_rounded, color: Colors.white),
+              selectedIcon: Icon(Icons.favorite_rounded, color: Colors.white),
+              label: 'Favorites',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outline_rounded, color: Colors.white),
