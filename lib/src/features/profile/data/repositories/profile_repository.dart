@@ -59,7 +59,7 @@ class ProfileRepository {
       'email': user.email,
       'username': username,
       'bio': bio,
-      if (avatarUrl != null) 'avatar_url': avatarUrl,
+      'avatar_url': avatarUrl,
     });
 
     final profile = await fetchProfile();

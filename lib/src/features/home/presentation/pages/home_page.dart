@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/main_navigation.dart';
+import '../../../gallery/presentation/pages/gallery_page.dart';
+import '../../../profile/presentation/pages/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,102 +34,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFBF7),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hey, ${_getUserName()}',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const Text(
-                          'Explore, Discover, Enjoy',
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
-                        ),
-                      ],
-                    ),
-                    const CircleAvatar(
-                      radius: 22,
-                      backgroundColor: Colors.black12,
-                      child: Icon(Icons.person, color: Colors.black54),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search by artist or title',
-                    prefixIcon: const Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  'Featured Artists',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 15),
-                SizedBox(
-                  height: 160,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _buildArtistItem('Van Gogh', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/vangogh_profile.jpg'),
-                      _buildArtistItem('Claude Monet', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/monet_profile.jpg'),
-                      _buildArtistItem('Leonardo', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/davinci_profile.jpg'),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  'Artworks',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 15),
-                StreamBuilder<List<Map<String, dynamic>>>(
-                  stream: _artworksStream(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    final artworks = snapshot.data ?? const [];
-                    
-                    return MasonryGridView.count(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 14,
-                      crossAxisSpacing: 14,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: artworks.length,
-                      itemBuilder: (context, index) {
-                        return ArtworkCard(artwork: artworks[index]);
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 100),
-              ],
-            ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: IndexedStack(
+        index: _navIndex,
+        children: [
+          _HomeFeed(
+            userName: _getUserName(),
+            artworksStream: _artworksStream(),
           ),
-        ),
+          const GalleryPage(),
+          const ProfilePage(),
+        ],
       ),
       bottomNavigationBar: MainNavigation(
         currentIndex: _navIndex,
@@ -136,6 +53,113 @@ class _HomePageState extends State<HomePage> {
             _navIndex = index;
           });
         },
+      ),
+    );
+  }
+}
+
+class _HomeFeed extends StatelessWidget {
+  const _HomeFeed({required this.userName, required this.artworksStream});
+
+  final String userName;
+  final Stream<List<Map<String, dynamic>>> artworksStream;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hey, $userName',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      Text(
+                        'Explore, Discover, Enjoy',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  const CircleAvatar(
+                    radius: 22,
+                    backgroundColor: Colors.black12,
+                    child: Icon(Icons.person, color: Colors.black54),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search by artist or title',
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Theme.of(context).cardColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Featured Artists',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 15),
+              SizedBox(
+                height: 160,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildArtistItem('Van Gogh', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/vangogh_profile.jpg'),
+                    _buildArtistItem('Claude Monet', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/monet_profile.jpg'),
+                    _buildArtistItem('Leonardo', 'https://vjmbmshunfbtvofmrvpx.supabase.co/storage/v1/object/public/artworks/davinci_profile.jpg'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Artworks',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 15),
+              StreamBuilder<List<Map<String, dynamic>>>(
+                stream: artworksStream,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final artworks = snapshot.data ?? const [];
+
+                  return MasonryGridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 14,
+                    crossAxisSpacing: 14,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: artworks.length,
+                    itemBuilder: (context, index) {
+                      return ArtworkCard(artwork: artworks[index]);
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 100),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -198,7 +222,7 @@ class _ArtworkCardState extends State<ArtworkCard> {
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOut,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(32),
         boxShadow: const [
           BoxShadow(
@@ -262,7 +286,7 @@ class _ArtworkCardState extends State<ArtworkCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title, 
+                  title,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
