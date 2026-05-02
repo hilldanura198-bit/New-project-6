@@ -9,6 +9,7 @@ import '../../../artwork/presentation/pages/artwork_detail_page.dart';
 import '../../../artwork/presentation/widgets/favorite_heart_button.dart';
 import '../../../favorites/presentation/pages/favorites_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
+import '../../../scan/presentation/pages/scan_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -57,6 +58,30 @@ class _HomePageState extends ConsumerState<HomePage> {
           });
         },
       ),
+      floatingActionButton: _navIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder<void>(
+                    transitionDuration: const Duration(milliseconds: 320),
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return FadeTransition(
+                        opacity: CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeOut,
+                        ),
+                        child: const ScanPage(),
+                      );
+                    },
+                  ),
+                );
+              },
+              backgroundColor: const Color(0xFF111110),
+              foregroundColor: const Color(0xFFF6E8CB),
+              icon: const Icon(Icons.document_scanner_outlined),
+              label: const Text('Scan Artwork'),
+            )
+          : null,
     );
   }
 }
