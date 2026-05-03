@@ -165,7 +165,9 @@ class _ScanPageState extends ConsumerState<ScanPage>
                         padding: const EdgeInsets.only(bottom: 10),
                         child: Text(
                           scanState.error!,
-                          style: const TextStyle(color: Colors.redAccent),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.redAccent,
+                              ),
                         ),
                       ),
                     Padding(
@@ -187,12 +189,15 @@ class _ScanPageState extends ConsumerState<ScanPage>
                               ? const SizedBox(
                                   width: 20,
                                   height: 20,
-                                  child: CircularProgressIndicator(
+                              child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     color: Color(0xFFF6E8CB),
                                   ),
                                 )
-                              : const Text('Tap to Scan'),
+                              : Text(
+                                  'Tap to Scan',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
                         ),
                       ),
                     ),

@@ -75,7 +75,7 @@ class ArtworkDetailPage extends StatelessWidget {
                           ),
                     ),
                     const SizedBox(height: 8),
-                    Text(artist, style: Theme.of(context).textTheme.titleMedium),
+                    Text(artist, style: Theme.of(context).textTheme.bodyLarge),
                     const SizedBox(height: 20),
                     Text(
                       description,
@@ -102,7 +102,10 @@ class ArtworkDetailPage extends StatelessWidget {
                           );
                         },
                         icon: const Icon(Icons.tune_rounded),
-                        label: const Text('Edit Artwork'),
+                        label: Text(
+                          'Edit Artwork',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ),
                     ),
                   ],

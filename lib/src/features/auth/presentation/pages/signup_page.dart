@@ -113,7 +113,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
+      appBar: AppBar(title: Text('Create Account', style: Theme.of(context).textTheme.titleLarge)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -158,7 +158,7 @@ class _SignupPageState extends State<SignupPage> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
-                        : const Text('Sign Up'),
+                        : Text('Sign Up', style: Theme.of(context).textTheme.bodyMedium),
                   ),
                 ),
               ],

@@ -20,12 +20,12 @@ class ArtworkEditingPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Artwork Editing'),
+        title: Text('Artwork Editing', style: Theme.of(context).textTheme.titleLarge),
         actions: [
           TextButton.icon(
             onPressed: notifier.reset,
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Reset'),
+            label: Text('Reset', style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),
@@ -109,14 +109,14 @@ class ArtworkEditingPage extends ConsumerWidget {
                               color: const Color(0x8A1F1812),
                               borderRadius: BorderRadius.circular(14),
                             ),
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                               child: Text(
                                 'Live Preview',
-                                style: TextStyle(
-                                  color: Color(0xFFF6E8CB),
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: const Color(0xFFF6E8CB),
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                             ),
                           ),

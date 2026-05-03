@@ -24,12 +24,10 @@ class OnboardingPage extends StatelessWidget {
               ),
               Text(
                 'GALLERY ART',
-                style: TextStyle(
-                  fontSize: 12,
-                  letterSpacing: 3.5,
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      letterSpacing: 3.5,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               const SizedBox(height: 30),
               const Expanded(
@@ -49,11 +47,9 @@ class OnboardingPage extends StatelessWidget {
               Text(
                 'Jelajahi kurasi karya seni terbaik dunia dalam genggaman Anda dengan pengalaman visual yang eksklusif.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 15,
-                  height: 1.5,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      height: 1.5,
+                    ),
               ),
               const Spacer(),
               SizedBox(
@@ -72,13 +68,12 @@ class OnboardingPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'MULAI JELAJAHI',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.1,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.1,
+                        ),
                   ),
                 ),
               ),

@@ -72,7 +72,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               backgroundColor: const Color(0xFF111110),
               foregroundColor: const Color(0xFFF6E8CB),
               icon: const Icon(Icons.document_scanner_outlined),
-              label: const Text('Scan Artwork'),
+              label: Text('Scan Artwork', style: Theme.of(context).textTheme.bodyMedium),
             )
           : null,
     );
@@ -166,7 +166,10 @@ class _HomeFeedState extends ConsumerState<_HomeFeed> {
               ),
               const SizedBox(height: 10),
               if (searchState.error != null)
-                Text(searchState.error!, style: const TextStyle(color: Colors.redAccent)),
+                Text(
+                  searchState.error!,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+                ),
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
                 child: searchState.filteredArtworks.isEmpty

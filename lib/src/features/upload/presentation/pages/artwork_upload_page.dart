@@ -212,7 +212,7 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                                   ? null
                                   : () => _pickImage(ImageSource.camera),
                               icon: const Icon(Icons.photo_camera_outlined),
-                              label: const Text('Camera'),
+                              label: Text('Camera', style: Theme.of(context).textTheme.bodyMedium),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -222,7 +222,7 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                                   ? null
                                   : () => _pickImage(ImageSource.gallery),
                               icon: const Icon(Icons.photo_library_outlined),
-                              label: const Text('Gallery'),
+                              label: Text('Gallery', style: Theme.of(context).textTheme.bodyMedium),
                             ),
                           ),
                         ],
@@ -308,7 +308,7 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
               FilledButton.icon(
                 onPressed: uploadState.isUploading ? null : _submit,
                 icon: const Icon(Icons.cloud_upload_outlined),
-                label: const Text('Upload Artwork'),
+                label: Text('Upload Artwork', style: Theme.of(context).textTheme.bodyMedium),
               ),
             ],
           ),

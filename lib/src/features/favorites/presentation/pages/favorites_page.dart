@@ -34,7 +34,7 @@ class FavoritesPage extends ConsumerWidget {
                 const SizedBox(height: 10),
                 Text(
                   favoritesState.error!,
-                  style: const TextStyle(color: Colors.redAccent),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
                 ),
               ],
               const SizedBox(height: 18),
@@ -122,7 +122,12 @@ class FavoritesPage extends ConsumerWidget {
                       },
                     );
                   },
-                  error: (error, _) => Center(child: Text('Failed to load favorites: $error')),
+                  error: (error, _) => Center(
+                    child: Text(
+                      'Failed to load favorites: $error',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
                   loading: () => const Center(child: CircularProgressIndicator()),
                 ),
               ),

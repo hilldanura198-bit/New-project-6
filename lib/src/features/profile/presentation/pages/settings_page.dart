@@ -46,7 +46,7 @@ class SettingsPage extends ConsumerWidget {
                 const SizedBox(height: 8),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Dark mode'),
+                  title: Text('Dark mode', style: Theme.of(context).textTheme.bodyMedium),
                   value: isDarkMode,
                   onChanged: (_) => ref.read(darkModeProvider.notifier).toggle(),
                 ),
@@ -74,7 +74,7 @@ class SettingsPage extends ConsumerWidget {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   leading: const Icon(Icons.person_outline_rounded),
                   title: Text(profile?.username ?? '-'),
-                  subtitle: const Text('Username'),
+                  subtitle: Text('Username', style: Theme.of(context).textTheme.bodySmall),
                 ),
                 const SizedBox(height: 8),
                 ListTile(
@@ -83,7 +83,7 @@ class SettingsPage extends ConsumerWidget {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   leading: const Icon(Icons.email_outlined),
                   title: Text(profile?.email ?? '-'),
-                  subtitle: const Text('Email'),
+                  subtitle: Text('Email', style: Theme.of(context).textTheme.bodySmall),
                 ),
               ],
             ),
@@ -92,7 +92,7 @@ class SettingsPage extends ConsumerWidget {
           FilledButton.tonalIcon(
             onPressed: () => _logout(context),
             icon: const Icon(Icons.logout_rounded),
-            label: const Text('Logout'),
+            label: Text('Logout', style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

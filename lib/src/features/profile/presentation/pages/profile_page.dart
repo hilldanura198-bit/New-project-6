@@ -115,7 +115,7 @@ class ProfilePage extends ConsumerWidget {
                               );
                             },
                             icon: const Icon(Icons.edit_rounded),
-                            label: const Text('Edit Profile'),
+                            label: Text('Edit Profile', style: Theme.of(context).textTheme.bodyMedium),
                           ),
                         ),
                         if (isAdmin) ...[
@@ -131,7 +131,10 @@ class ProfilePage extends ConsumerWidget {
                                 );
                               },
                               icon: const Icon(Icons.cloud_upload_outlined),
-                              label: const Text('Admin Upload Artwork'),
+                              label: Text(
+                                'Admin Upload Artwork',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
                             ),
                           ),
                         ],

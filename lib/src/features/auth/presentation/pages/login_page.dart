@@ -165,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
-                            : const Text('Login'),
+                            : Text('Login', style: Theme.of(context).textTheme.bodyMedium),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -175,7 +175,10 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialPageRoute<void>(builder: (_) => const SignupPage()),
                         );
                       },
-                      child: const Text("Don't have an account? Sign up"),
+                      child: Text(
+                        "Don't have an account? Sign up",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     SizedBox(
@@ -189,7 +192,10 @@ class _LoginPageState extends State<LoginPage> {
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.g_mobiledata_rounded),
-                        label: const Text('Continue with Google'),
+                        label: Text(
+                          'Continue with Google',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ),
                     ),
                   ],

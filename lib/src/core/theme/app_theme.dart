@@ -38,16 +38,26 @@ class AppTheme {
       textTheme: TextTheme(
         displayLarge: GoogleFonts.playfairDisplay(
           fontSize: 42,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           height: 1.1,
           color: Colors.black87,
+        ),
+        displayMedium: GoogleFonts.playfairDisplay(
+          fontSize: 34,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF1F1A15),
         ),
         headlineMedium: GoogleFonts.playfairDisplay(
           fontSize: 30,
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         ),
-        bodyLarge: GoogleFonts.montserrat(
+        titleLarge: GoogleFonts.playfairDisplay(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF1F1A15),
+        ),
+        bodyLarge: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: const Color(0xFF2E261D),
@@ -57,6 +67,12 @@ class AppTheme {
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: const Color(0xFF5A4C3D),
+          height: 1.4,
+        ),
+        bodySmall: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFF7A6A56),
           height: 1.4,
         ),
       ),
@@ -129,16 +145,26 @@ class AppTheme {
       textTheme: TextTheme(
         displayLarge: GoogleFonts.playfairDisplay(
           fontSize: 42,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           height: 1.1,
           color: Colors.white,
+        ),
+        displayMedium: GoogleFonts.playfairDisplay(
+          fontSize: 34,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFFF2E8D4),
         ),
         headlineMedium: GoogleFonts.playfairDisplay(
           fontSize: 30,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
-        bodyLarge: GoogleFonts.montserrat(
+        titleLarge: GoogleFonts.playfairDisplay(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFFF2E8D4),
+        ),
+        bodyLarge: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: const Color(0xFFF1E5CC),
@@ -148,6 +174,12 @@ class AppTheme {
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: const Color(0xFFD2C2A8),
+          height: 1.4,
+        ),
+        bodySmall: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFFB8A890),
           height: 1.4,
         ),
       ),
