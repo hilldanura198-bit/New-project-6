@@ -28,7 +28,13 @@ class _LoginPageState extends State<LoginPage> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email dan password wajib diisi.')),
+        const SnackBar(content: Text('Email and password are required.')),
+      );
+      return;
+    }
+    if (!email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email address.')),
       );
       return;
     }
@@ -54,15 +60,18 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) {
         return;
       }
+      final message = error.message.toLowerCase().contains('invalid login')
+          ? 'Invalid credentials. Please check your email and password.'
+          : error.message;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
+        SnackBar(content: Text(message)),
       );
     } catch (_) {
       if (!mounted) {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login gagal. Silakan coba lagi.')),
+        const SnackBar(content: Text('Login failed. Please try again.')),
       );
     } finally {
       if (mounted) {
