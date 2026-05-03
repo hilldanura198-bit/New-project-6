@@ -22,7 +22,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(darkModeProvider);
+    final themeMode = ref.watch(themeModeProvider);
     final profile = ref.watch(userProfileProvider).valueOrNull;
 
     return Scaffold(
@@ -47,8 +47,8 @@ class SettingsPage extends ConsumerWidget {
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
                   title: Text('Dark mode', style: Theme.of(context).textTheme.bodyMedium),
-                  value: isDarkMode,
-                  onChanged: (_) => ref.read(darkModeProvider.notifier).toggle(),
+                  value: themeMode == ThemeMode.dark,
+                  onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
                 ),
               ],
             ),

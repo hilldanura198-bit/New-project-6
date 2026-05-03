@@ -69,8 +69,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 );
               },
-              backgroundColor: const Color(0xFF111110),
-              foregroundColor: const Color(0xFFF6E8CB),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
               icon: const Icon(Icons.document_scanner_outlined),
               label: Text('Scan Artwork', style: Theme.of(context).textTheme.bodyMedium),
             )
@@ -317,7 +317,7 @@ class _ArtworkCardState extends State<ArtworkCard> {
                   Text(
                     priceLabel,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppTheme.primaryBlue,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w700,
                         ),
                   ),

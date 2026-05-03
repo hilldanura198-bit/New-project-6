@@ -10,14 +10,14 @@ class ArsivaApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(darkModeProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Arsiva Gallery Art',
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      themeMode: themeMode,
       home: const OnboardingPage(),
     );
   }
