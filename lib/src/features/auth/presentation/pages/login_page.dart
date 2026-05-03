@@ -124,16 +124,16 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 34),
-              Text('Selamat Datang', style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 28),
+              Text('Selamat Datang', style: Theme.of(context).textTheme.displayMedium),
               const SizedBox(height: 8),
               Text(
                 'Masuk untuk melanjutkan perjalanan seni Anda.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(26),
@@ -179,6 +179,11 @@ class _LoginPageState extends State<LoginPage> {
                         "Don't have an account? Sign up",
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'or',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 8),
                     SizedBox(
