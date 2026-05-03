@@ -1,70 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HeroArtworkCard extends StatelessWidget {
   const HeroArtworkCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 420,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(36),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 40,
-            offset: Offset(0, 20),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(36),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=1200&q=80',
-              fit: BoxFit.cover,
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.45),
-                  ],
-                ),
-              ),
-            ),
-            const Positioned(
-              left: 20,
-              right: 20,
-              bottom: 20,
-              child: _ArtworkCaption(),
-            ),
-          ],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.network(
+          'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=1200&q=80',
+          fit: BoxFit.cover,
         ),
-      ),
-    );
-  }
-}
-
-class _ArtworkCaption extends StatelessWidget {
-  const _ArtworkCaption();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text(
-      'Curated Masterpieces\nfor Modern Collectors',
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 22,
-        fontWeight: FontWeight.w600,
-        height: 1.25,
-      ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.15),
+                Colors.transparent,
+                Colors.black.withOpacity(0.3),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: 20,
+          right: 20,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F9FA).withOpacity(0.9),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.auto_awesome, color: Color(0xFF0047AB), size: 16),
+                const SizedBox(width: 6),
+                Text(
+                  'Featured',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0047AB),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
