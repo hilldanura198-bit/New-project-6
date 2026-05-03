@@ -43,11 +43,20 @@ class _SignupPageState extends State<SignupPage> {
     });
 
     try {
-      final response = await Supabase.instance.client.auth.signUp(
+      final client = Supabase.instance.client;
+      final response = await client.auth.signUp(
         email: email,
         password: password,
         data: {'username': username},
       );
+      final user = response.user;
+      if (user != null) {
+        await _ensureProfileExists(
+          userId: user.id,
+          email: user.email ?? email,
+          username: username,
+        );
+      }
 
       if (!mounted) {
         return;
@@ -85,6 +94,20 @@ class _SignupPageState extends State<SignupPage> {
         });
       }
     }
+  }
+
+  Future<void> _ensureProfileExists({
+    required String userId,
+    required String email,
+    required String username,
+  }) async {
+    await Supabase.instance.client.from('profiles').upsert({
+      'id': userId,
+      'email': email,
+      'username': username,
+      'bio': '',
+      'role': 'user',
+    });
   }
 
   @override
