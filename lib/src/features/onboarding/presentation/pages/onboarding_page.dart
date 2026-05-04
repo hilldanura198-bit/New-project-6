@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../widgets/hero_artwork_card.dart';
+import '../../../../core/state/theme_mode_provider.dart';
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends ConsumerWidget {
   const OnboardingPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFBFA),
+      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFFDFBFA),
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -49,8 +54,10 @@ class OnboardingPage extends StatelessWidget {
                         const Icon(Icons.shopping_cart_outlined, color: Color(0xFF0047AB), size: 22),
                         const SizedBox(width: 8),
                         Switch(
-                          value: false,
-                          onChanged: (val) {},
+                          value: isDark,
+                          onChanged: (val) {
+                            ref.read(themeModeProvider.notifier).toggle();
+                          },
                           activeColor: const Color(0xFF0047AB),
                         ),
                       ],
@@ -89,14 +96,14 @@ class OnboardingPage extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
                   Text(
                     'Van Gogh',
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: isDark ? Colors.white70 : Colors.grey[600],
                     ),
                   ),
                   const SizedBox(height: 12),
