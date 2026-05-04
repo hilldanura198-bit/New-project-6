@@ -14,146 +14,167 @@ class ProfilePage extends ConsumerWidget {
     final profileAsync = ref.watch(userProfileProvider);
 
     return Scaffold(
-      body: SafeArea(
-        child: profileAsync.when(
-          data: (profile) {
-            final isAdmin = profile.role.toLowerCase() == 'admin';
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: profileAsync.when(
+        data: (profile) {
+          final isAdmin = profile.role.toLowerCase() == 'admin';
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+                  child: Column(
                     children: [
-                      Text(
-                        'Collector Profile',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => const SettingsPage(),
+                      Center(
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                                  width: 4,
+                                ),
+                              ),
+                              child: CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
+                                    ? NetworkImage(profile.avatarUrl!)
+                                    : null,
+                                child: profile.avatarUrl == null || profile.avatarUrl!.isEmpty
+                                    ? const Icon(Icons.person_rounded, size: 60, color: Colors.grey)
+                                    : null,
+                              ),
                             ),
-                          );
-                        },
-                        icon: const Icon(Icons.tune_rounded),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        profile.username,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -0.5,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        profile.email,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey,
+                            ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Text(
+                          profile.bio.isEmpty
+                              ? 'Curator of fine digital arts and cultural heritage.'
+                              : profile.bio,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(32),
-                      gradient: LinearGradient(
-                        colors: Theme.of(context).brightness == Brightness.dark
-                            ? const [Color(0xFF1A1A19), Color(0xFF232321)]
-                            : const [Color(0xFFFFFFFF), Color(0xFFF5EFE3)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x16000000),
-                          blurRadius: 26,
-                          offset: Offset(0, 12),
-                        ),
-                      ],
-                      border: Border.all(
-                        color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 54,
-                          backgroundColor: Colors.black12,
-                          backgroundImage: profile.avatarUrl != null &&
-                                  profile.avatarUrl!.isNotEmpty
-                              ? NetworkImage(profile.avatarUrl!)
-                              : null,
-                          child: profile.avatarUrl == null || profile.avatarUrl!.isEmpty
-                              ? const Icon(Icons.person_rounded, size: 52)
-                              : null,
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          profile.username,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          profile.email,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          profile.bio.isEmpty
-                              ? 'No curator note yet. Add a short biography to personalize your profile.'
-                              : profile.bio,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder<void>(
-                                  transitionDuration: const Duration(milliseconds: 250),
-                                  pageBuilder: (context, animation, secondaryAnimation) => const EditProfilePage(),
-                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                    return FadeTransition(opacity: animation, child: child);
-                                  },
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.edit_rounded),
-                            label: Text('Edit Profile', style: Theme.of(context).textTheme.bodyMedium),
-                          ),
-                        ),
-                        if (isAdmin) ...[
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => const ArtworkUploadPage(),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.cloud_upload_outlined),
-                              label: Text(
-                                'Admin Upload Artwork',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            );
-          },
-          error: (error, _) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text('Unable to load profile: $error'),
-            ),
-          ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-        ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _buildMenuSection(context, 'Account Settings', [
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.person_outline_rounded,
+                        title: 'Edit Profile',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                        ),
+                      ),
+                      if (isAdmin)
+                        _buildMenuItem(
+                          context,
+                          icon: Icons.auto_awesome_motion_rounded,
+                          title: 'Admin Upload Artwork',
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const ArtworkUploadPage()),
+                          ),
+                        ),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.settings_outlined,
+                        title: 'Settings',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const SettingsPage()),
+                        ),
+                      ),
+                    ]),
+                    const SizedBox(height: 24),
+                    _buildMenuSection(context, 'Preferences', [
+                      _buildMenuItem(context, icon: Icons.notifications_none_rounded, title: 'Notifications'),
+                      _buildMenuItem(context, icon: Icons.language_rounded, title: 'Language'),
+                      _buildMenuItem(context, icon: Icons.security_rounded, title: 'Privacy & Security'),
+                    ]),
+                  ]),
+                ),
+              ),
+            ],
+          );
+        },
+        error: (error, _) => Center(child: Text('Error: $error')),
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
+    );
+  }
+
+  Widget _buildMenuSection(BuildContext context, String title, List<Widget> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8, bottom: 12),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(children: items),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenuItem(BuildContext context, {required IconData icon, required String title, VoidCallback? onTap}) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+      ),
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+      trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+      onTap: onTap,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     );
   }
 }

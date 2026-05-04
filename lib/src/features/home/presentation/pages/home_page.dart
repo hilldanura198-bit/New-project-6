@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/theme/app_theme.dart';
@@ -69,10 +70,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 );
               },
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              foregroundColor: Theme.of(context).colorScheme.onSurface,
-              icon: const Icon(Icons.document_scanner_outlined),
-              label: Text('Scan Artwork', style: Theme.of(context).textTheme.bodyMedium),
+              backgroundColor: const Color(0xFF1A1A2E),
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.qr_code_scanner_rounded),
+              label: Text(
+                'Scan Art',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+              ),
             )
           : null,
     );
@@ -107,48 +111,49 @@ class _HomeFeedState extends ConsumerState<_HomeFeed> {
   Widget build(BuildContext context) {
     final searchState = ref.watch(artworkSearchProvider);
     final searchNotifier = ref.read(artworkSearchProvider.notifier);
-
-    if (_searchController.text != searchState.query) {
-      _searchController.value = TextEditingValue(
-        text: searchState.query,
-        selection: TextSelection.collapsed(offset: searchState.query.length),
-      );
-    }
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return SafeArea(
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hey, ${widget.userName}',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        'Hey, ${widget.userName} 👋',
+                        style: GoogleFonts.poppins(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
                       ),
                       Text(
-                        'Explore, Discover, Enjoy',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        'Find your favorite masterpieces',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
                   const CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Colors.black12,
-                    child: Icon(Icons.person, color: Colors.black54),
+                    radius: 24,
+                    backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=hilda'),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              ArtworkSearchFilterBar(
+            ),
+            const SizedBox(height: 25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: ArtworkSearchFilterBar(
                 controller: _searchController,
                 onQueryChanged: searchNotifier.setQuery,
                 categories: searchState.categories,
@@ -159,35 +164,65 @@ class _HomeFeedState extends ConsumerState<_HomeFeed> {
                 onArtistChanged: searchNotifier.setArtist,
                 onClear: searchNotifier.clearFilters,
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Artworks',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 10),
-              if (searchState.error != null)
-                Text(
-                  searchState.error!,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'Featured Exhibitions',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
+              ),
+            ),
+            const SizedBox(height: 15),
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return _buildFeaturedCard(index, isDarkMode);
+                },
+              ),
+            ),
+            const SizedBox(height: 35),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Explore Artworks',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'View all',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: const Color(0xFF3F3DBB),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
                 child: searchState.filteredArtworks.isEmpty
-                    ? Padding(
-                        key: const ValueKey<String>('empty'),
-                        padding: const EdgeInsets.symmetric(vertical: 40),
-                        child: Center(
-                          child: Text(
-                            'No artworks match your current filters.',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      )
+                    ? const Center(child: Text('No artworks found'))
                     : MasonryGridView.count(
-                        key: ValueKey<int>(searchState.filteredArtworks.length),
                         crossAxisCount: 2,
-                        mainAxisSpacing: 14,
-                        crossAxisSpacing: 14,
+                        mainAxisSpacing: 20,
+                        crossAxisSpacing: 18,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: searchState.filteredArtworks.length,
@@ -196,136 +231,117 @@ class _HomeFeedState extends ConsumerState<_HomeFeed> {
                         },
                       ),
               ),
-              const SizedBox(height: 100),
-            ],
-          ),
+            ),
+            const SizedBox(height: 100),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeaturedCard(int index, bool isDark) {
+    final colors = [const Color(0xFF1A1A2E), const Color(0xFF42275A), const Color(0xFF2C3E50)];
+    final titles = ['Digital Renaissance', 'Modern Sculpture', 'Abstract Flow'];
+
+    return Container(
+      width: 300,
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      decoration: BoxDecoration(
+        color: colors[index],
+        borderRadius: BorderRadius.circular(28),
+        image: DecorationImage(
+          image: NetworkImage('https://picsum.photos/seed/${index + 50}/400/250'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'Live Event',
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              titles[index],
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class ArtworkCard extends StatefulWidget {
+class ArtworkCard extends StatelessWidget {
   const ArtworkCard({super.key, required this.artwork});
 
   final Map<String, dynamic> artwork;
 
   @override
-  State<ArtworkCard> createState() => _ArtworkCardState();
-}
-
-class _ArtworkCardState extends State<ArtworkCard> {
-  bool _previewMode = true;
-
-  @override
   Widget build(BuildContext context) {
-    final title = (widget.artwork['title'] ?? 'Untitled').toString();
-    final artist = (widget.artwork['artist_name'] ?? 'Unknown Artist').toString();
-    final imageUrl = (widget.artwork['image_url'] ?? '').toString();
-    final priceRaw = widget.artwork['price'];
-    final priceLabel = priceRaw == null ? 'Price on request' : 'Rp $priceRaw';
-    final artworkId = widget.artwork['id'].toString();
+    final title = (artwork['title'] ?? 'Untitled').toString();
+    final artist = (artwork['artist_name'] ?? 'Unknown Artist').toString();
+    final imageUrl = (artwork['image_url'] ?? '').toString();
+    final artworkId = artwork['id'].toString();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 24,
-            offset: Offset(0, 10),
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => ArtworkDetailPage(artwork: artwork)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: imageUrl.isEmpty
+                    ? Container(height: 200, color: Colors.grey[300])
+                    : Image.network(imageUrl, fit: BoxFit.cover),
+              ),
+              Positioned(
+                top: 12,
+                right: 12,
+                child: FavoriteHeartButton(artworkId: artworkId),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+          ),
+          Text(
+            artist,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: Colors.grey,
+            ),
           ),
         ],
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(32),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => ArtworkDetailPage(artwork: widget.artwork),
-            ),
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-                  child: AspectRatio(
-                    aspectRatio: _previewMode ? 3 / 4 : 4 / 3,
-                    child: imageUrl.isEmpty
-                        ? const ColoredBox(color: Color(0xFFEFE9DE))
-                        : Image.network(imageUrl, fit: BoxFit.cover),
-                  ),
-                ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: FavoriteHeartButton(artworkId: artworkId),
-                ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Preview',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 11),
-                        ),
-                        Transform.scale(
-                          scale: 0.78,
-                          child: Switch(
-                            value: _previewMode,
-                            activeTrackColor: AppTheme.primaryBlue,
-                            onChanged: (value) {
-                              setState(() {
-                                _previewMode = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(artist, style: Theme.of(context).textTheme.bodyMedium),
-                  const SizedBox(height: 10),
-                  Text(
-                    priceLabel,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

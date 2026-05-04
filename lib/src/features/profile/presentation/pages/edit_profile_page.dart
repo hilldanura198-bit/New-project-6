@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../providers/profile_provider.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
@@ -20,6 +18,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _picker = ImagePicker();
   XFile? _selectedAvatar;
   bool _initialized = false;
+  bool _isSaving = false; // Loading state untuk tombol
 
   @override
   void dispose() {
@@ -43,31 +42,36 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
+    setState(() => _isSaving = true);
     final notifier = ref.read(userProfileProvider.notifier);
 
-    if (_selectedAvatar != null) {
-      final bytes = await _selectedAvatar!.readAsBytes();
-      final ext = _selectedAvatar!.path.split('.').last;
-      await notifier.uploadAvatar(bytes: bytes, fileExt: ext);
+    try {
+      if (_selectedAvatar != null) {
+        final bytes = await _selectedAvatar!.readAsBytes();
+        final ext = _selectedAvatar!.path.split('.').last;
+        await notifier.uploadAvatar(bytes: bytes, fileExt: ext);
+      }
+
+      await notifier.saveProfile(
+        username: _usernameController.text.trim(),
+        bio: _bioController.text.trim(),
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully!')),
+      );
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
-
-    await notifier.saveProfile(
-      username: _usernameController.text.trim(),
-      bio: _bioController.text.trim(),
-    );
-
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated.')),
-    );
-    Navigator.of(context).pop();
   }
 
   @override
@@ -75,7 +79,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final profileAsync = ref.watch(userProfileProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
+      appBar: AppBar(
+        title: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
+      ),
       body: profileAsync.when(
         data: (profile) {
           if (!_initialized) {
@@ -90,79 +99,91 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   ? NetworkImage(profile.avatarUrl!)
                   : null);
 
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 220),
-            child: SingleChildScrollView(
-              key: ValueKey<String>(profile.avatarUrl ?? 'none'),
-              padding: const EdgeInsets.all(20),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
-                  ),
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 52,
-                            backgroundColor: Colors.black12,
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // --- AVATAR PICKER SECTION ---
+                  Center(
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), width: 4),
+                          ),
+                          child: CircleAvatar(
+                            radius: 65,
+                            backgroundColor: Colors.grey[200],
                             backgroundImage: avatarProvider,
                             child: avatarProvider == null
-                                ? const Icon(Icons.person_rounded, size: 52)
+                                ? const Icon(Icons.person_rounded, size: 65, color: Colors.grey)
                                 : null,
                           ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: IconButton.filled(
-                              onPressed: _pickImage,
-                              icon: const Icon(Icons.camera_alt_rounded),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: _pickImage,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 20),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Username',
                         ),
-                        validator: (value) {
-                          final text = value?.trim() ?? '';
-                          if (text.length < 3) {
-                            return 'Username must be at least 3 characters.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: _bioController,
-                        maxLines: 4,
-                        maxLength: 200,
-                        decoration: const InputDecoration(
-                          labelText: 'Bio (optional)',
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                      const SizedBox(height: 22),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: _save,
-                          child: const Text('Save Changes'),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 32),
+
+                  // --- INPUT FIELDS SECTION ---
+                  _buildTextField(
+                    label: 'Username',
+                    controller: _usernameController,
+                    icon: Icons.alternate_email_rounded,
+                    validator: (value) {
+                      if ((value?.trim().length ?? 0) < 3) return 'Minimal 3 karakter';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    label: 'Bio',
+                    controller: _bioController,
+                    icon: Icons.notes_rounded,
+                    maxLines: 3,
+                    maxLength: 200,
+                    hint: 'Tell the world about yourself...',
+                  ),
+                  const SizedBox(height: 40),
+
+                  // --- SAVE BUTTON ---
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: FilledButton(
+                      onPressed: _isSaving ? null : _save,
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      child: _isSaving
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -170,6 +191,51 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         error: (error, _) => Center(child: Text('Error: $error')),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+    int maxLines = 1,
+    int? maxLength,
+    String? hint,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        ),
+        TextFormField(
+          controller: controller,
+          maxLines: maxLines,
+          maxLength: maxLength,
+          validator: validator,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon, size: 20),
+            filled: true,
+            fillColor: Theme.of(context).cardColor,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,7 +1,5 @@
 import 'dart:typed_data';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../models/user_profile.dart';
 
 class ProfileRepository {
@@ -22,19 +20,21 @@ class ProfileRepository {
     final user = _currentUser;
     final response = await _client
         .from('profiles')
-        .select('id,email,username,bio,avatar_url,role')
+        .select('id, email, username, bio, avatar_url, role')
         .eq('id', user.id)
         .maybeSingle();
 
     if (response == null) {
       final fallbackUsername = user.email?.split('@').first ?? 'Collector';
-      await _client.from('profiles').upsert({
+      final newProfile = {
         'id': user.id,
         'email': user.email,
         'username': fallbackUsername,
         'bio': '',
         'role': 'user',
-      });
+      };
+
+      await _client.from('profiles').upsert(newProfile);
 
       return UserProfile(
         id: user.id,
@@ -56,16 +56,19 @@ class ProfileRepository {
   }) async {
     final user = _currentUser;
 
-    await _client.from('profiles').upsert({
+    final updateData = {
       'id': user.id,
       'email': user.email,
       'username': username,
       'bio': bio,
-      'avatar_url': avatarUrl,
-    });
+    };
 
-    final profile = await fetchProfile();
-    return profile;
+    if (avatarUrl != null) {
+      updateData['avatar_url'] = avatarUrl;
+    }
+
+    await _client.from('profiles').upsert(updateData);
+    return fetchProfile();
   }
 
   Future<String> uploadAvatar({
@@ -79,7 +82,10 @@ class ProfileRepository {
     await _client.storage.from(_bucket).uploadBinary(
           filePath,
           bytes,
-          fileOptions: const FileOptions(upsert: true),
+          fileOptions: const FileOptions(
+            cacheControl: '3600',
+            upsert: true,
+          ),
         );
 
     return _client.storage.from(_bucket).getPublicUrl(filePath);

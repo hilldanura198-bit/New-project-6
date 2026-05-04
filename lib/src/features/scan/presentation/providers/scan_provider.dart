@@ -50,10 +50,10 @@ class ScanController extends StateNotifier<ScanState> {
         detectedArtwork: artwork,
       );
       return artwork;
-    } catch (error) {
+    } catch (e) {
       state = state.copyWith(
         isScanning: false,
-        error: 'Scan failed. Please try again.',
+        error: e.toString(),
       );
       return null;
     }

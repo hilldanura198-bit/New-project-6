@@ -26,6 +26,17 @@ class UserProfile {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'email': email,
+      'username': username,
+      'bio': bio,
+      'avatar_url': avatarUrl,
+      'role': role,
+    };
+  }
+
   UserProfile copyWith({
     String? username,
     String? bio,
