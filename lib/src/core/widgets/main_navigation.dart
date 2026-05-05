@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_theme.dart';
-
 class MainNavigation extends StatelessWidget {
   const MainNavigation({
     super.key,
@@ -15,61 +13,35 @@ class MainNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF262019)
-            : const Color(0xFF111111),
-        borderRadius: BorderRadius.circular(24),
+        color: const Color(0xFF111111),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x30000000),
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
+          BoxShadow(color: Color(0x33000000), blurRadius: 16, offset: Offset(0, 6)),
         ],
       ),
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
           labelTextStyle: WidgetStateProperty.all(
-            Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+            Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ),
         child: NavigationBar(
-          height: 66,
+          height: 62,
           backgroundColor: Colors.transparent,
-          indicatorColor: AppTheme.accentBlue.withAlpha(55),
+          indicatorColor: const Color(0x334A63F2),
           selectedIndex: currentIndex,
           onDestinationSelected: onTap,
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined, color: Colors.white),
-              selectedIcon: Icon(Icons.home_rounded, color: Colors.white),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.grid_view_rounded, color: Colors.white),
-              selectedIcon: Icon(Icons.grid_on_rounded, color: Colors.white),
-              label: 'Gallery',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.auto_awesome_outlined, color: Colors.white),
-              selectedIcon: Icon(Icons.auto_awesome_rounded, color: Colors.white),
-              label: 'AI',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded, color: Colors.white),
-              selectedIcon: Icon(Icons.person_rounded, color: Colors.white),
-              label: 'Profile',
-            ),
+            NavigationDestination(icon: Icon(Icons.home_outlined, color: Colors.white), selectedIcon: Icon(Icons.home_rounded, color: Colors.white), label: 'Home'),
+            NavigationDestination(icon: Icon(Icons.grid_view_rounded, color: Colors.white), selectedIcon: Icon(Icons.grid_on_rounded, color: Colors.white), label: 'Gallery'),
+            NavigationDestination(icon: Icon(Icons.auto_awesome_outlined, color: Colors.white), selectedIcon: Icon(Icons.auto_awesome_rounded, color: Colors.white), label: 'AI'),
+            NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white), selectedIcon: Icon(Icons.person_rounded, color: Colors.white), label: 'Profile'),
           ],
         ),
       ),
     );
   }
 }
-

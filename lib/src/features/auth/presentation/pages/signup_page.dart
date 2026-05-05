@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_typography.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'auth_landing_page.dart';
+
+import '../../../../core/theme/app_typography.dart';
+import 'login_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -32,301 +33,77 @@ class _SignupPageState extends State<SignupPage> {
 
     if (username.length < 3 || email.isEmpty || password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Username min 3 chars, password min 6 chars, and valid email required.'),
-        ),
+        const SnackBar(content: Text('Username min 3, password min 6, email wajib diisi.')),
       );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      final client = Supabase.instance.client;
-      final response = await client.auth.signUp(
+      final response = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
         data: {'username': username},
       );
       final user = response.user;
       if (user != null) {
-        await _ensureProfileExists(
-          userId: user.id,
-          email: user.email ?? email,
-          username: username,
-        );
+        await Supabase.instance.client.from('profiles').upsert({
+          'id': user.id,
+          'email': user.email ?? email,
+          'username': username,
+          'bio': '',
+          'role': 'user',
+        });
       }
 
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully. Welcome to ARSIVA.'),
-          backgroundColor: Colors.green,
-        ),
-      );
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(builder: (_) => const AuthLandingPage()),
+        MaterialPageRoute<void>(builder: (_) => const LoginPage()),
         (route) => false,
-      );
-    } on AuthException catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
       );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signup failed. Please try again.')),
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(builder: (_) => const LoginPage()),
       );
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  Future<void> _ensureProfileExists({
-    required String userId,
-    required String email,
-    required String username,
-  }) async {
-    await Supabase.instance.client.from('profiles').upsert({
-      'id': userId,
-      'email': email,
-      'username': username,
-      'bio': '',
-      'role': 'user',
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFBFA),
-      // Tombol back biar gampang balik ke Login
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0047AB), size: 20),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
+      appBar: AppBar(),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon/Header ARSIVA (Center)
-                Column(
-                  children: [
-                    Text(
-                      'ARSIVA',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                        letterSpacing: 4.0,
-                        color: const Color(0xFF0047AB),
-                      ),
-                    ),
-                    Text(
-                      'GALLERY ART',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 11,
-                        letterSpacing: 2.5,
-                        color: const Color(0xFF0047AB).withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Text('ARSIVA', style: Theme.of(context).textTheme.titleLarge?.copyWith(letterSpacing: 4, fontWeight: FontWeight.w700)),
+              Text('GALLERY ART', style: Theme.of(context).textTheme.bodySmall?.copyWith(letterSpacing: 2)),
+              const SizedBox(height: 24),
+              Text('Buat Akun', style: AppTypography.glyphic(fontSize: 34, color: Theme.of(context).textTheme.titleLarge?.color)),
+              const SizedBox(height: 16),
+              TextField(controller: _usernameController, style: const TextStyle(color: Colors.black, fontSize: 16), decoration: InputDecoration(hintText: 'Username', hintStyle: GoogleFonts.poppins(color: Colors.grey[400]))),
+              const SizedBox(height: 12),
+              TextField(controller: _emailController, style: const TextStyle(color: Colors.black, fontSize: 16), decoration: InputDecoration(hintText: 'Email', hintStyle: GoogleFonts.poppins(color: Colors.grey[400]))),
+              const SizedBox(height: 12),
+              TextField(controller: _passwordController, obscureText: true, style: const TextStyle(color: Colors.black, fontSize: 16), decoration: InputDecoration(hintText: 'Password', hintStyle: GoogleFonts.poppins(color: Colors.grey[400]))),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: FilledButton(
+                  onPressed: _isLoading ? null : _signUp,
+                  child: _isLoading ? const CircularProgressIndicator() : const Text('SIGN UP'),
                 ),
-                const SizedBox(height: 40),
-                Text(
-                  'Buat Akun',
-                  textAlign: TextAlign.center,
-                  style: AppTypography.glyphic(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Mulai kumpulkan mahakarya digital Anda hari ini.',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 35),
-                
-                // Form Card
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      // Username Field
-                      TextField(
-                        controller: _usernameController,
-                        style: const TextStyle(color: Colors.black, fontSize: 16),
-                        decoration: InputDecoration(
-                          hintText: 'Username',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                          prefixIcon: const Icon(Icons.person_outline, size: 20),
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Email Field
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        style: const TextStyle(color: Colors.black, fontSize: 16),
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                          prefixIcon: const Icon(Icons.email_outlined, size: 20),
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Password Field
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        style: const TextStyle(color: Colors.black, fontSize: 16),
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                          prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // Signup Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _signUp,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0047AB),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Colors.white),
-                                )
-                              : Text(
-                                  'SIGN UP',
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    letterSpacing: 1.1,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Login Link
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: RichText(
-                    text: TextSpan(
-                      text: "Already have an account? ",
-                      style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 13),
-                      children: [
-                        TextSpan(
-                          text: "Login",
-                          style: GoogleFonts.poppins(
-                            color: const Color(0xFF0047AB),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
-
-
-
-
-
