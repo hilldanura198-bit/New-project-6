@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/theme/app_typography.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../home/presentation/pages/home_page.dart';
+import 'auth_landing_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -60,17 +61,16 @@ class _SignupPageState extends State<SignupPage> {
 
       if (!mounted) return;
 
-      if (response.session != null) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute<void>(builder: (_) => const HomePage()),
-          (route) => false,
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Signup successful. Please verify email, then login.')),
-        );
-        Navigator.of(context).pop();
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully. Welcome to ARSIVA.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const AuthLandingPage()),
+        (route) => false,
+      );
     } on AuthException catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -142,7 +142,7 @@ class _SignupPageState extends State<SignupPage> {
                         fontWeight: FontWeight.w500,
                         fontSize: 11,
                         letterSpacing: 2.5,
-                        color: const Color(0xFF0047AB).withOpacity(0.6),
+                        color: const Color(0xFF0047AB).withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -151,7 +151,7 @@ class _SignupPageState extends State<SignupPage> {
                 Text(
                   'Buat Akun',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.playfairDisplay(
+                  style: AppTypography.glyphic(
                     fontSize: 34,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -176,7 +176,7 @@ class _SignupPageState extends State<SignupPage> {
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -187,15 +187,23 @@ class _SignupPageState extends State<SignupPage> {
                       // Username Field
                       TextField(
                         controller: _usernameController,
-                        style: GoogleFonts.poppins(fontSize: 14),
+                        style: const TextStyle(color: Colors.black, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Username',
                           hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
                           prefixIcon: const Icon(Icons.person_outline, size: 20),
                           filled: true,
-                          fillColor: const Color(0xFFF8F9FA),
+                          fillColor: Colors.grey[100],
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -205,15 +213,23 @@ class _SignupPageState extends State<SignupPage> {
                       TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        style: GoogleFonts.poppins(fontSize: 14),
+                        style: const TextStyle(color: Colors.black, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Email',
                           hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
                           prefixIcon: const Icon(Icons.email_outlined, size: 20),
                           filled: true,
-                          fillColor: const Color(0xFFF8F9FA),
+                          fillColor: Colors.grey[100],
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -223,15 +239,23 @@ class _SignupPageState extends State<SignupPage> {
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
-                        style: GoogleFonts.poppins(fontSize: 14),
+                        style: const TextStyle(color: Colors.black, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Password',
                           hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
                           prefixIcon: const Icon(Icons.lock_outline, size: 20),
                           filled: true,
-                          fillColor: const Color(0xFFF8F9FA),
+                          fillColor: Colors.grey[100],
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -300,3 +324,9 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
+
+
+
+
+
+

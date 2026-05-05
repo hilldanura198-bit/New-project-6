@@ -15,33 +15,33 @@ class MainNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF29221B)
-            : const Color(0xFF2D261E),
+            ? const Color(0xFF262019)
+            : const Color(0xFF111111),
         borderRadius: BorderRadius.circular(24),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x2632281F),
-            blurRadius: 24,
-            offset: Offset(0, 10),
+            color: Color(0x30000000),
+            blurRadius: 20,
+            offset: Offset(0, 8),
           ),
         ],
       ),
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
           labelTextStyle: WidgetStateProperty.all(
-            Theme.of(context).textTheme.bodyMedium?.copyWith(
+            Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
           ),
         ),
         child: NavigationBar(
-          height: 70,
+          height: 66,
           backgroundColor: Colors.transparent,
-          indicatorColor: AppTheme.accentGold.withValues(alpha: 0.22),
+          indicatorColor: AppTheme.accentBlue.withAlpha(55),
           selectedIndex: currentIndex,
           onDestinationSelected: onTap,
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
@@ -52,9 +52,14 @@ class MainNavigation extends StatelessWidget {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.favorite_border_rounded, color: Colors.white),
-              selectedIcon: Icon(Icons.favorite_rounded, color: Colors.white),
-              label: 'Favorites',
+              icon: Icon(Icons.grid_view_rounded, color: Colors.white),
+              selectedIcon: Icon(Icons.grid_on_rounded, color: Colors.white),
+              label: 'Gallery',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.auto_awesome_outlined, color: Colors.white),
+              selectedIcon: Icon(Icons.auto_awesome_rounded, color: Colors.white),
+              label: 'AI',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outline_rounded, color: Colors.white),
@@ -67,3 +72,4 @@ class MainNavigation extends StatelessWidget {
     );
   }
 }
+

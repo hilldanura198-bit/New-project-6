@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../home/presentation/pages/home_page.dart';
+import 'auth_landing_page.dart';
 import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -75,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(builder: (_) => const HomePage()),
+        MaterialPageRoute<void>(builder: (_) => const AuthLandingPage()),
       );
     } on AuthException catch (error) {
       if (!mounted) return;
@@ -97,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFBFA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -105,25 +104,22 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Header ARSIVA
                 Column(
                   children: [
                     Text(
                       'ARSIVA',
-                      style: GoogleFonts.poppins(
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 22,
                         letterSpacing: 4.0,
-                        color: const Color(0xFF0047AB),
+                        color: Colors.black,
                       ),
                     ),
                     Text(
                       'GALLERY ART',
-                      style: GoogleFonts.poppins(
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
-                        fontSize: 11,
                         letterSpacing: 2.5,
-                        color: const Color(0xFF0047AB).withOpacity(0.6),
+                        color: Colors.black54,
                       ),
                     ),
                   ],
@@ -132,20 +128,13 @@ class _LoginPageState extends State<LoginPage> {
                 Text(
                   'Selamat Datang',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   'Masuk untuk melanjutkan perjalanan seni Anda.',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
                 ),
                 const SizedBox(height: 40),
                 
@@ -157,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -168,15 +157,23 @@ class _LoginPageState extends State<LoginPage> {
                       TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        style: GoogleFonts.poppins(fontSize: 14),
+                        style: const TextStyle(color: Colors.black, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Email',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                          hintStyle: TextStyle(color: Colors.grey[500]),
                           prefixIcon: const Icon(Icons.email_outlined, size: 20),
                           filled: true,
-                          fillColor: const Color(0xFFF8F9FA),
+                          fillColor: Colors.grey[100],
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -185,15 +182,23 @@ class _LoginPageState extends State<LoginPage> {
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
-                        style: GoogleFonts.poppins(fontSize: 14),
+                        style: const TextStyle(color: Colors.black, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Password',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                          hintStyle: TextStyle(color: Colors.grey[500]),
                           prefixIcon: const Icon(Icons.lock_outline, size: 20),
                           filled: true,
-                          fillColor: const Color(0xFFF8F9FA),
+                          fillColor: Colors.grey[100],
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -205,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _signIn,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0047AB),
+                            backgroundColor: Colors.black,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
@@ -221,11 +226,11 @@ class _LoginPageState extends State<LoginPage> {
                                 )
                               : Text(
                                   'LOGIN',
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    letterSpacing: 1.1,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.1,
+                                      ),
                                 ),
                         ),
                       ),
@@ -241,18 +246,18 @@ class _LoginPageState extends State<LoginPage> {
                       MaterialPageRoute<void>(builder: (_) => const SignupPage()),
                     );
                   },
-                  child: RichText(
-                    text: TextSpan(
-                      text: "Don't have an account? ",
-                      style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 13),
-                      children: [
-                        TextSpan(
-                          text: "Sign up",
-                          style: GoogleFonts.poppins(
-                            color: const Color(0xFF0047AB),
-                            fontWeight: FontWeight.bold,
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Don't have an account? ",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54),
+                        children: [
+                          TextSpan(
+                            text: "Sign up",
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -263,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                     const Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('or', style: GoogleFonts.poppins(color: Colors.grey, fontSize: 12)),
+                      child: Text('or', style: Theme.of(context).textTheme.bodySmall),
                     ),
                     const Expanded(child: Divider()),
                   ],
@@ -291,10 +296,9 @@ class _LoginPageState extends State<LoginPage> {
                         : const Icon(Icons.g_mobiledata_rounded, size: 30, color: Colors.red),
                     label: Text(
                       'Continue with Google',
-                      style: GoogleFonts.poppins(
-                        color: Colors.black87,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.black,
                         fontWeight: FontWeight.w500,
-                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -308,3 +312,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+
+
+
+
