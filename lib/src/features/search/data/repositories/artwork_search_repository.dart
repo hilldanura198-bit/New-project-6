@@ -8,6 +8,7 @@ class ArtworkSearchRepository {
   Stream<List<Map<String, dynamic>>> streamArtworks() {
     return _client
         .from('artworks')
-        .stream(primaryKey: ['id']).order('created_at', ascending: false);
+        .stream(primaryKey: ['id'])
+        .order('created_at', ascending: false);
   }
 }

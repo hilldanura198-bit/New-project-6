@@ -75,7 +75,7 @@ class SettingsPage extends ConsumerWidget {
               title: const Text('Dark Mode', style: TextStyle(fontWeight: FontWeight.w600)),
               trailing: Switch.adaptive(
                 value: themeMode == ThemeMode.dark,
-                activeColor: Theme.of(context).primaryColor,
+                activeThumbColor: Theme.of(context).primaryColor,
                 onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
               ),
             ),

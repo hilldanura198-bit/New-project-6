@@ -29,12 +29,13 @@ class ArtworkSearchFilterBar extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOut,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.45),
+          // Diakali pakai withAlpha: 0.45 * 255 = 115
+          color: Theme.of(context).dividerColor.withAlpha(115),
         ),
         boxShadow: const [
           BoxShadow(
@@ -69,32 +70,45 @@ class ArtworkSearchFilterBar extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           AnimatedSize(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeInOut,
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 10,
+            child: Column(
               children: [
-                _dropdown(
-                  context: context,
-                  label: 'Category',
-                  value: selectedCategory,
-                  items: categories,
-                  onChanged: onCategoryChanged,
+                Row(
+                  children: [
+                    Expanded(
+                      child: _dropdown(
+                        context: context,
+                        label: 'Category',
+                        value: selectedCategory,
+                        items: categories,
+                        onChanged: onCategoryChanged,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _dropdown(
+                        context: context,
+                        label: 'Artist',
+                        value: selectedArtist,
+                        items: artists,
+                        onChanged: onArtistChanged,
+                      ),
+                    ),
+                  ],
                 ),
-                _dropdown(
-                  context: context,
-                  label: 'Artist',
-                  value: selectedArtist,
-                  items: artists,
-                  onChanged: onArtistChanged,
-                ),
-                OutlinedButton.icon(
-                  onPressed: onClear,
-                  icon: const Icon(Icons.filter_alt_off_rounded),
-                  label: const Text('Reset'),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: onClear,
+                    icon: const Icon(Icons.filter_alt_off_rounded, size: 16),
+                    label: const Text('Reset'),
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -112,13 +126,13 @@ class ArtworkSearchFilterBar extends StatelessWidget {
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      width: 170,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.35),
+          // Diakali pakai withAlpha: 0.35 * 255 = 89
+          color: Theme.of(context).dividerColor.withAlpha(89),
         ),
       ),
       child: DropdownButtonHideUnderline(

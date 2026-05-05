@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/widgets/main_navigation.dart';
-import '../../../artwork/presentation/pages/artwork_detail_page.dart';
-import '../../../artwork/presentation/widgets/favorite_heart_button.dart';
 import '../../../gallery/presentation/pages/gallery_page.dart';
+import '../../../home/presentation/pages/home_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
-import '../../../search/presentation/providers/artwork_search_provider.dart';
+import '../../../../core/widgets/main_navigation.dart';
 
 class MainHostPage extends ConsumerStatefulWidget {
   const MainHostPage({super.key});
@@ -18,174 +14,50 @@ class MainHostPage extends ConsumerStatefulWidget {
 }
 
 class _MainHostPageState extends ConsumerState<MainHostPage> {
-  int _navIndex = 0;
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: IndexedStack(
-          index: _navIndex,
+          index: _currentIndex,
           children: const [
-            _HomeFeed(),
+            HomePage(),
             GalleryPage(),
-            AIAssistantPage(),
+            _MainAiProxyPage(),
             ProfilePage(),
           ],
         ),
       ),
       bottomNavigationBar: MainNavigation(
-        currentIndex: _navIndex,
-        onTap: (index) => setState(() => _navIndex = index),
+        currentIndex: _currentIndex,
+        onTap: (value) => setState(() => _currentIndex = value),
       ),
     );
   }
 }
 
-class _HomeFeed extends ConsumerWidget {
-  const _HomeFeed();
-
-  String _displayName(User? user) {
-    if (user == null) return 'Collector';
-    final meta = user.userMetadata;
-    final username = (meta?['username'] ?? '').toString().trim();
-    if (username.isNotEmpty) return username;
-    final email = user.email ?? '';
-    if (email.contains('@')) return email.split('@').first;
-    return 'Collector';
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final searchState = ref.watch(artworkSearchProvider);
-    final user = Supabase.instance.client.auth.currentUser;
-    final username = _displayName(user);
-
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Column(
-                    children: [
-                      Text('ARSIVA', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 3.2)),
-                      Text('GALLERY ART', style: Theme.of(context).textTheme.bodySmall?.copyWith(letterSpacing: 2)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Text('Hey, $username', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text('Selamat datang kembali di galeri seni ARSIVA', style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(14)),
-              child: Row(
-                children: [
-                  const Icon(Icons.search_rounded),
-                  const SizedBox(width: 10),
-                  Text('Search artworks, artist, category', style: Theme.of(context).textTheme.bodyMedium),
-                ],
-              ),
-            ),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 90),
-          sliver: searchState.filteredArtworks.isEmpty
-              ? SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 30),
-                    child: Center(child: Text('No artworks available', style: Theme.of(context).textTheme.bodyMedium)),
-                  ),
-                )
-              : SliverMasonryGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childCount: searchState.filteredArtworks.length,
-                  itemBuilder: (context, index) => _ArtworkCard(artwork: searchState.filteredArtworks[index]),
-                ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ArtworkCard extends StatelessWidget {
-  const _ArtworkCard({required this.artwork});
-
-  final Map<String, dynamic> artwork;
+class _MainAiProxyPage extends StatelessWidget {
+  const _MainAiProxyPage();
 
   @override
   Widget build(BuildContext context) {
-    final title = (artwork['title'] ?? 'Untitled').toString();
-    final imageUrl = (artwork['image_url'] ?? '').toString();
-    final priceRaw = artwork['price'];
-    final priceLabel = priceRaw == null ? 'Price on request' : 'Rp $priceRaw';
-    final artworkId = artwork['id'].toString();
-
-    return GestureDetector(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ArtworkDetailPage(artwork: artwork))),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            AspectRatio(aspectRatio: 3 / 4, child: imageUrl.isEmpty ? const ColoredBox(color: Color(0xFFECE6DE)) : Image.network(imageUrl, fit: BoxFit.cover)),
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x05000000), Color(0x00000000), Color(0xA6000000)]),
-                ),
-              ),
-            ),
-            Positioned(top: 8, right: 8, child: FavoriteHeartButton(artworkId: artworkId)),
-            Positioned(
-              left: 10,
-              right: 10,
-              bottom: 10,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 3),
-                  Text(priceLabel, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const _InlineAIAssistantPage();
   }
 }
 
-
-import 'package:flutter/material.dart';
-
-class AIAssistantPage extends StatefulWidget {
-  const AIAssistantPage({super.key});
+class _InlineAIAssistantPage extends StatefulWidget {
+  const _InlineAIAssistantPage();
 
   @override
-  State<AIAssistantPage> createState() => _AIAssistantPageState();
+  State<_InlineAIAssistantPage> createState() => _InlineAIAssistantPageState();
 }
 
-class _AIAssistantPageState extends State<AIAssistantPage> {
+class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
   final _controller = TextEditingController();
-  final List<_ChatMessage> _messages = [];
-  String _activeModel = 'GPT';
+  final List<String> _logs = [];
+  String _model = 'GPT';
 
   @override
   void dispose() {
@@ -193,220 +65,46 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
     super.dispose();
   }
 
-  void _sendFromModel(String model, [String? preset]) {
-    final prompt = (preset ?? _controller.text).trim();
-    if (prompt.isEmpty) return;
-
+  void _send([String? preset]) {
+    final q = (preset ?? _controller.text).trim();
+    if (q.isEmpty) return;
     setState(() {
-      _activeModel = model;
-      _messages.add(_ChatMessage(role: 'user', model: model, text: prompt));
-      _messages.add(_ChatMessage(role: 'assistant', model: model, text: _artFocusedReply(prompt, model)));
+      _logs.add('$_model • You: $q');
+      _logs.add('$_model • ARSIVA AI: Saya hanya menjawab soal galeri ARSIVA dan panduan editing karya.');
       _controller.clear();
     });
   }
 
-  String _artFocusedReply(String prompt, String model) {
-    final lower = prompt.toLowerCase();
-    const guardrail =
-        'Saya fokus pada konteks ARSIVA: konsep seni, referensi karya galeri, dan panduan editing artwork di aplikasi.';
-
-    if (lower.contains('warna') || lower.contains('editing') || lower.contains('filter')) {
-      return '[$model] Untuk editing karya: mulai dari exposure +10, contrast +8, saturation +6 agar detail tetap natural. $guardrail';
-    }
-    if (lower.contains('galeri') || lower.contains('arsiva') || lower.contains('karya')) {
-      return '[$model] Di ARSIVA, Anda bisa jelajahi karya dari Home/Gallery, simpan favorit, lalu buka detail untuk insight medium, artist, dan tahun. $guardrail';
-    }
-    if (lower.contains('seni') || lower.contains('art')) {
-      return '[$model] Konsep seni yang relevan: komposisi, pencahayaan, perspektif, dan narasi visual. Saya bisa bantu breakdown per karya di ARSIVA. $guardrail';
-    }
-
-    return '[$model] $guardrail Coba tanya tentang: referensi karya, kurasi galeri, atau langkah editing foto karya.';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 100),
+      children: [
+        Text('How can I help you today?', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _controller,
+          decoration: const InputDecoration(hintText: 'Ask anything about art...', prefixIcon: Icon(Icons.search_rounded)),
+          onSubmitted: (_) => _send(),
+        ),
+        const SizedBox(height: 12),
+        Row(
           children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                children: [
-                  Text('How can I help you today?', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 12),
-                  _SearchComposer(
-                    controller: _controller,
-                    onSubmit: () => _sendFromModel(_activeModel),
-                  ),
-                  const SizedBox(height: 16),
-                  Text('Featured Models', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _ModelButton(
-                          label: 'Meta',
-                          selected: _activeModel == 'Meta',
-                          onTap: () => setState(() => _activeModel = 'Meta'),
-                          onSend: () => _sendFromModel('Meta', 'Berikan tips kurasi karya ARSIVA.'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _ModelButton(
-                          label: 'GPT',
-                          selected: _activeModel == 'GPT',
-                          onTap: () => setState(() => _activeModel = 'GPT'),
-                          onSend: () => _sendFromModel('GPT', 'Bagaimana cara analisis visual sebuah lukisan?'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _ModelButton(
-                          label: 'Gemini',
-                          selected: _activeModel == 'Gemini',
-                          onTap: () => setState(() => _activeModel = 'Gemini'),
-                          onSend: () => _sendFromModel('Gemini', 'Saran editing artwork agar tetap natural?'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Text('Recent Activities', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 10),
-                  ..._messages.reversed.take(8).map((m) => _ChatTile(message: m)),
-                  if (_messages.isEmpty)
-                    Text(
-                      'Belum ada aktivitas. Coba tanya konsep seni atau bantuan editing karya.',
-                      style: textTheme.bodySmall,
-                    ),
-                ],
-              ),
-            ),
+            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'Meta'); _send('Tips kurasi galeri ARSIVA'); }, child: const Text('Meta'))),
+            const SizedBox(width: 8),
+            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'GPT'); _send('Analisis visual karya seni'); }, child: const Text('GPT'))),
+            const SizedBox(width: 8),
+            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'Gemini'); _send('Tips filter dan crop karya'); }, child: const Text('Gemini'))),
           ],
         ),
-      ),
+        const SizedBox(height: 12),
+        ..._logs.reversed.take(10).map((e) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)),
+              child: Text(e, style: Theme.of(context).textTheme.bodyMedium),
+            )),
+      ],
     );
   }
 }
-
-class _SearchComposer extends StatelessWidget {
-  const _SearchComposer({required this.controller, required this.onSubmit});
-
-  final TextEditingController controller;
-  final VoidCallback onSubmit;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.add_rounded),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                hintText: 'Ask anything about art...',
-                border: InputBorder.none,
-              ),
-              onSubmitted: (_) => onSubmit(),
-            ),
-          ),
-          IconButton(
-            onPressed: onSubmit,
-            icon: const Icon(Icons.send_rounded),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ModelButton extends StatelessWidget {
-  const _ModelButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-    required this.onSend,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  final VoidCallback onSend;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? Theme.of(context).colorScheme.primary.withAlpha(25) : Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
-          ),
-        ),
-        child: Column(
-          children: [
-            Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 6),
-            SizedBox(
-              height: 28,
-              child: OutlinedButton(
-                onPressed: onSend,
-                child: const Text('Chat'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ChatTile extends StatelessWidget {
-  const _ChatTile({required this.message});
-
-  final _ChatMessage message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('${message.model} • ${message.role == 'assistant' ? 'ARSIVA AI' : 'You'}', style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 4),
-          Text(message.text, style: Theme.of(context).textTheme.bodyMedium),
-        ],
-      ),
-    );
-  }
-}
-
-class _ChatMessage {
-  const _ChatMessage({required this.role, required this.model, required this.text});
-
-  final String role;
-  final String model;
-  final String text;
-}
-

@@ -182,7 +182,7 @@ class _ScanPageState extends ConsumerState<ScanPage>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFF734B6D).withOpacity(0.5),
+                        color: const Color(0xFF734B6D).withValues(alpha: 0.5),
                         width: 2,
                       ),
                     ),
@@ -191,7 +191,7 @@ class _ScanPageState extends ConsumerState<ScanPage>
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF734B6D).withOpacity(0.2),
+                          color: const Color(0xFF734B6D).withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -284,7 +284,7 @@ class _ScanPageState extends ConsumerState<ScanPage>
 class ScannerOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final backgroundPaint = Paint()..color = Colors.black.withOpacity(0.5);
+    final backgroundPaint = Paint()..color = Colors.black.withValues(alpha: 0.5);
     
     final frameRect = Rect.fromCenter(
       center: Offset(size.width / 2, size.height / 2),
@@ -300,7 +300,7 @@ class ScannerOverlayPainter extends CustomPainter {
     canvas.drawPath(overlayPath, backgroundPaint);
 
     final borderPaint = Paint()
-      ..color = Colors.white.withOpacity(0.4)
+      ..color = Colors.white.withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 

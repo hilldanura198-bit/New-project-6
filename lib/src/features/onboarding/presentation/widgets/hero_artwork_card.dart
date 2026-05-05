@@ -19,9 +19,9 @@ class HeroArtworkCard extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.15),
+                Colors.black.withValues(alpha: 0.15),
                 Colors.transparent,
-                Colors.black.withOpacity(0.3),
+                Colors.black.withValues(alpha: 0.3),
               ],
             ),
           ),
@@ -32,7 +32,7 @@ class HeroArtworkCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA).withOpacity(0.9),
+              color: const Color(0xFFF8F9FA).withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(

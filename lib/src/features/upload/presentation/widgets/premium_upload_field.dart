@@ -18,21 +18,20 @@ class PremiumUploadField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeOut,
-      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
-        ),
-        boxShadow: const [
+        // Menyesuaikan warna background field agar tidak kontras sendirian
+        color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x10000000),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -41,16 +40,21 @@ class PremiumUploadField extends StatelessWidget {
         maxLines: maxLines,
         keyboardType: keyboardType,
         validator: validator,
+        style: const TextStyle(fontSize: 15),
         decoration: InputDecoration(
           labelText: label,
+          labelStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
           floatingLabelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
+            color: isDark ? const Color(0xFFFFC107) : const Color(0xFF3F51B5),
             fontWeight: FontWeight.w600,
           ),
+          // Padding dalam agar teks tidak mepet ke pinggir container
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide.none, // Hilangkan garis bawaan karena sudah pakai container
           ),
+          filled: false,
         ),
       ),
     );

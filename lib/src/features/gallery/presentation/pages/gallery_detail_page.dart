@@ -57,9 +57,9 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.3),
+                  Colors.black.withValues(alpha: 0.3),
                   Colors.transparent,
-                  Colors.black.withOpacity(0.8),
+                  Colors.black.withValues(alpha: 0.8),
                 ],
               ),
             ),
@@ -76,7 +76,7 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: CircleAvatar(
-                          backgroundColor: Colors.white.withOpacity(0.2),
+                          backgroundColor: Colors.white.withValues(alpha: 0.2),
                           child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
                         ),
                       ),
@@ -88,14 +88,14 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                             width: _currentPage == index ? 20 : 6,
                             height: 6,
                             decoration: BoxDecoration(
-                              color: _currentPage == index ? Colors.white : Colors.white.withOpacity(0.4),
+                              color: _currentPage == index ? Colors.white : Colors.white.withValues(alpha: 0.4),
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
                       ),
                       CircleAvatar(
-                        backgroundColor: Colors.white.withOpacity(0.2),
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
                         child: const Icon(Icons.share_rounded, color: Colors.white, size: 20),
                       ),
                     ],
@@ -104,9 +104,9 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +139,7 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                         Text(
                           'Discover this masterpiece from multiple angles. Swipe left or right to explore every detail and texture preserved in the ARSIVA vault.',
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 13,
                             height: 1.5,
                           ),
@@ -157,7 +157,7 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                               borderRadius: BorderRadius.circular(18),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF42275A).withOpacity(0.4),
+                                  color: const Color(0xFF42275A).withValues(alpha: 0.4),
                                   blurRadius: 15,
                                   offset: const Offset(0, 8),
                                 ),
@@ -192,9 +192,9 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: [

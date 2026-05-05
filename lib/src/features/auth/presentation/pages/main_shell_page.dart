@@ -88,11 +88,11 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
           ],
         ),
         const SizedBox(height: 12),
-        ..._logs.reversed.take(10).map((entry) => Container(
+        ..._logs.reversed.take(10).map((e) => Container(
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)),
-              child: Text(entry, style: Theme.of(context).textTheme.bodyMedium),
+              child: Text(e, style: Theme.of(context).textTheme.bodyMedium),
             )),
       ],
     );

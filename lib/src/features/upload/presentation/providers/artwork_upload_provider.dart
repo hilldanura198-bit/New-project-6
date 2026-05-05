@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -53,35 +52,44 @@ class ArtworkUploadNotifier extends StateNotifier<ArtworkUploadState> {
     required Uint8List imageBytes,
     required String fileExt,
   }) async {
+    // Validasi draft dari model
     final errors = draft.validate();
     if (errors.isNotEmpty) {
       state = state.copyWith(error: errors.first);
       return false;
     }
 
+    // Mulai Loading
     state = const ArtworkUploadState(isUploading: true, progress: 0.1);
 
     try {
-      state = state.copyWith(progress: 0.45);
+      // Step 1: Upload File Gambar ke Storage
+      state = state.copyWith(progress: 0.3);
       final imageUrl = await _repository.uploadImage(
         bytes: imageBytes,
         fileExt: fileExt,
       );
 
-      state = state.copyWith(progress: 0.8);
+      // Step 2: Simpan Metadata ke Database
+      state = state.copyWith(progress: 0.7);
       await _repository.saveArtworkMetadata(draft: draft, imageUrl: imageUrl);
 
+      // Selesai
       state = const ArtworkUploadState(
         isUploading: false,
-        progress: 1,
+        progress: 1.0,
         successMessage: 'Artwork uploaded successfully.',
       );
       return true;
-    } catch (error) {
-      state = const ArtworkUploadState(
+    } catch (e) {
+      // Jika terjadi error (misal koneksi atau Supabase bermasalah)
+      state = ArtworkUploadState(
         isUploading: false,
         progress: 0,
-      ).copyWith(error: 'Upload failed. Please try again.');
+        error: e.toString().contains('PostgrestException') 
+            ? 'Gagal menyimpan data ke database.' 
+            : 'Gagal mengupload gambar. Periksa koneksi internet.',
+      );
       return false;
     }
   }
