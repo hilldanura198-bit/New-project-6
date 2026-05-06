@@ -26,80 +26,88 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  const Spacer(),
-                  Column(
-                    children: [
-                      Text('ARSIVA GALLERY ART', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 1.6)),
-                    ],
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _controller,
+              itemCount: _slides.length,
+              onPageChanged: (v) => setState(() => _index = v),
+              itemBuilder: (_, i) {
+                final s = _slides[i];
+                return SmartArtImage(
+                  imageUrl: s.$3,
+                  title: s.$1,
+                );
+              },
+            ),
+            const Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0x1F000000), Color(0x3D000000), Color(0x9A000000)],
                   ),
-                  const Spacer(),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 14,
+              left: 18,
+              right: 18,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'ARSIVA GALLERY ART',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.6,
+                          ),
+                    ),
+                  ),
                   IconButton(
                     onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
-                    icon: const Icon(Icons.dark_mode_outlined, color: Color(0xFF1657C0)),
+                    icon: const Icon(Icons.dark_mode_outlined, color: Colors.white),
                     tooltip: 'Toggle Theme',
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: PageView.builder(
-                  controller: _controller,
-                  itemCount: _slides.length,
-                  onPageChanged: (v) => setState(() => _index = v),
-                  itemBuilder: (_, i) {
-                    final s = _slides[i];
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(26),
-                            child: SmartArtImage(
-                              imageUrl: s.$3,
-                              title: s.$1,
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              bottom: 22,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(_slides.length, (i) => AnimatedContainer(duration: const Duration(milliseconds: 220), margin: const EdgeInsets.symmetric(horizontal: 4), width: _index == i ? 22 : 8, height: 8, decoration: BoxDecoration(color: _index == i ? Colors.white : Colors.white.withAlpha(120), borderRadius: BorderRadius.circular(20)))),
+                  ),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.white.withAlpha(235),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      ),
+                      onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute<void>(builder: (_) => const LoginPage())),
+                      child: Text(
+                        'JELAJAHI SEKARANG',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: const Color(0xFF1657C0),
+                              fontWeight: FontWeight.w800,
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(s.$1, style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w800)),
-                        Text(s.$2, style: Theme.of(context).textTheme.titleMedium),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(_slides.length, (i) => AnimatedContainer(duration: const Duration(milliseconds: 220), margin: const EdgeInsets.symmetric(horizontal: 4), width: _index == i ? 22 : 8, height: 8, decoration: BoxDecoration(color: _index == i ? const Color(0xFF1657C0) : const Color(0xFFD8DAE0), borderRadius: BorderRadius.circular(20)))),
-              ),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
-                decoration: BoxDecoration(color: const Color(0xFF1657C0), borderRadius: BorderRadius.circular(24)),
-                child: Column(
-                  children: [
-                    Text('Where Art Meets Digital', style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 14),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(backgroundColor: Colors.white),
-                        onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute<void>(builder: (_) => const LoginPage())),
-                        child: Text('JELAJAHI SEKARANG', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800)),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
