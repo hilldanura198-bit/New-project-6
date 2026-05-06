@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../upload/presentation/pages/artwork_upload_page.dart';
 import '../providers/profile_provider.dart';
 import 'edit_profile_page.dart';
-import 'settings_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -13,168 +12,67 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileProvider);
 
-    return Scaffold(
-      body: profileAsync.when(
-        data: (profile) {
-          final isAdmin = profile.role.toLowerCase() == 'admin';
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
-                                  width: 4,
-                                ),
-                              ),
-                              child: CircleAvatar(
-                                radius: 60,
-                                backgroundColor: Colors.grey[200],
-                                backgroundImage: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
-                                    ? NetworkImage(profile.avatarUrl!)
-                                    : null,
-                                child: profile.avatarUrl == null || profile.avatarUrl!.isEmpty
-                                    ? const Icon(Icons.person_rounded, size: 60, color: Colors.grey)
-                                    : null,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        profile.username,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: -0.5,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        profile.email,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey,
-                            ),
-                      ),
-                      const SizedBox(height: 12),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          profile.bio.isEmpty
-                              ? 'Curator of fine digital arts and cultural heritage.'
-                              : profile.bio,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    _buildMenuSection(context, 'Account Settings', [
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.person_outline_rounded,
-                        title: 'Edit Profile',
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const EditProfilePage()),
-                        ),
-                      ),
-                      if (isAdmin)
-                        _buildMenuItem(
-                          context,
-                          icon: Icons.auto_awesome_motion_rounded,
-                          title: 'Admin Upload Artwork',
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const ArtworkUploadPage()),
-                          ),
-                        ),
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.settings_outlined,
-                        title: 'Settings',
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const SettingsPage()),
-                        ),
-                      ),
-                    ]),
-                    const SizedBox(height: 24),
-                    _buildMenuSection(context, 'Preferences', [
-                      _buildMenuItem(context, icon: Icons.notifications_none_rounded, title: 'Notifications'),
-                      _buildMenuItem(context, icon: Icons.language_rounded, title: 'Language'),
-                      _buildMenuItem(context, icon: Icons.security_rounded, title: 'Privacy & Security'),
-                    ]),
-                  ]),
-                ),
-              ),
-            ],
-          );
-        },
-        error: (error, _) => Center(child: Text('Error: $error')),
-        loading: () => const Center(child: CircularProgressIndicator()),
-      ),
-    );
-  }
+    return profileAsync.when(
+      data: (profile) {
+        final menus = const [
+          (Icons.favorite_border_rounded, 'Favourites'),
+          (Icons.download_rounded, 'Downloads'),
+          (Icons.language_rounded, 'Language'),
+          (Icons.location_on_outlined, 'Location'),
+          (Icons.workspace_premium_outlined, 'Subscription'),
+          (Icons.cleaning_services_outlined, 'Clear Cache'),
+          (Icons.history_rounded, 'Clear History'),
+          (Icons.logout_rounded, 'Log Out'),
+        ];
 
-  Widget _buildMenuSection(BuildContext context, String title, List<Widget> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 12),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                const Spacer(),
+                Text('MY PROFILE', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+                const Spacer(),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.settings_outlined)),
+              ],
+            ),
+            const SizedBox(height: 18),
+            CircleAvatar(
+              radius: 44,
+              backgroundImage: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty ? NetworkImage(profile.avatarUrl!) : null,
+              child: profile.avatarUrl == null || profile.avatarUrl!.isEmpty ? const Icon(Icons.person_rounded, size: 46) : null,
+            ),
+            const SizedBox(height: 12),
+            Center(child: Text(profile.username, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700))),
+            Center(child: Text('@${profile.username.toLowerCase().replaceAll(' ', '')}', style: Theme.of(context).textTheme.bodySmall)),
+            const SizedBox(height: 12),
+            Center(
+              child: FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: const Color(0xFFE0455F)),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EditProfilePage())),
+                child: const Text('Edit Profile'),
               ),
-            ],
-          ),
-          child: Column(children: items),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMenuItem(BuildContext context, {required IconData icon, required String title, VoidCallback? onTap}) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),
-      ),
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
-      trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
-      onTap: onTap,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            ),
+            const SizedBox(height: 16),
+            ...menus.map((m) => ListTile(
+                  leading: Icon(m.$1),
+                  title: Text(m.$2),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () {
+                    if (m.$2 == 'Log Out') {
+                      ref.read(userProfileProvider.notifier).logout();
+                    }
+                    if (m.$2 == 'Subscription') {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArtworkUploadPage()));
+                    }
+                  },
+                )),
+          ],
+        );
+      },
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
 }

@@ -67,4 +67,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfile> {
       );
     });
   }
+  Future<void> logout() async {
+    await Supabase.instance.client.auth.signOut();
+  }
 }
