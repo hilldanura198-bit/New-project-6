@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+ï»¿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../gallery/presentation/pages/gallery_page.dart';
 import '../../../home/presentation/pages/home_page.dart';
@@ -56,7 +57,7 @@ class _InlineAIAssistantPage extends StatefulWidget {
 
 class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
   final _controller = TextEditingController();
-  final List<String> _logs = [];
+  final List<_InlineMessage> _logs = [];
   String _model = 'GPT';
 
   @override
@@ -69,42 +70,235 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
     final q = (preset ?? _controller.text).trim();
     if (q.isEmpty) return;
     setState(() {
-      _logs.add('$_model • You: $q');
-      _logs.add('$_model • ARSIVA AI: Saya hanya menjawab soal galeri ARSIVA dan panduan editing karya.');
+      _logs.add(_InlineMessage(isUser: true, text: q, model: _model));
+      _logs.add(_InlineMessage(isUser: false, text: _answer(q), model: _model));
       _controller.clear();
     });
   }
 
+  String _answer(String q) {
+    final input = q.toLowerCase();
+    const guard =
+        'Saya fokus pada bantuan ARSIVA: galeri, koleksi karya, dan editing.';
+    if (input.contains('edit') ||
+        input.contains('filter') ||
+        input.contains('crop')) {
+      return 'Untuk hasil premium, mulai dari filter Soft, atur Exposure tipis, lalu crop 4:5 supaya fokus objek lebih kuat. $guard';
+    }
+    if (input.contains('galeri') ||
+        input.contains('gallery') ||
+        input.contains('trending')) {
+      return 'Coba buka Gallery, gunakan search + kategori, lalu tandai karya dengan ikon hati untuk favorit. $guard';
+    }
+    if (input.contains('upload') || input.contains('scanner')) {
+      return 'Upload ada di halaman Gallery. Scanner bisa dipakai untuk capture cepat sebelum masuk detail karya. $guard';
+    }
+    return 'Saya siap bantu kebutuhan seni dan penggunaan fitur ARSIVA. $guard';
+  }
+
+  void _onVoiceTap() {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.mic_rounded,
+              size: 34,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Voice Recorder Siap',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Ucapkan pertanyaan Anda tentang galeri atau editing ARSIVA.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 14),
+            FilledButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Mulai Rekam'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = Supabase.instance.client.auth.currentUser;
+    final username =
+        (user?.userMetadata?['username'] ?? user?.email?.split('@').first ?? 'Collector')
+            .toString();
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 100),
       children: [
-        Text('How can I help you today?', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF0E4BB6), Color(0xFF5C8CFF)],
+            ),
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Text(
+            'Halo, $username! Ada yang bisa ARSIVA bantu hari ini?',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         const SizedBox(height: 12),
-        TextField(
-          controller: _controller,
-          decoration: const InputDecoration(hintText: 'Ask anything about art...', prefixIcon: Icon(Icons.search_rounded)),
-          onSubmitted: (_) => _send(),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.search_rounded),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  decoration: const InputDecoration(
+                    hintText: 'Ask anything about art...',
+                    border: InputBorder.none,
+                  ),
+                  onSubmitted: (_) => _send(),
+                ),
+              ),
+              IconButton(onPressed: _onVoiceTap, icon: const Icon(Icons.mic_rounded)),
+              IconButton(onPressed: _send, icon: const Icon(Icons.send_rounded)),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'Meta'); _send('Tips kurasi galeri ARSIVA'); }, child: const Text('Meta'))),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() => _model = 'Meta');
+                  _send('Tips kurasi galeri ARSIVA');
+                },
+                child: const Text('Meta'),
+              ),
+            ),
             const SizedBox(width: 8),
-            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'GPT'); _send('Analisis visual karya seni'); }, child: const Text('GPT'))),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() => _model = 'GPT');
+                  _send('Analisis visual karya seni');
+                },
+                child: const Text('GPT'),
+              ),
+            ),
             const SizedBox(width: 8),
-            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'Gemini'); _send('Tips filter dan crop karya'); }, child: const Text('Gemini'))),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() => _model = 'Gemini');
+                  _send('Tips filter dan crop karya');
+                },
+                child: const Text('Gemini'),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
-        ..._logs.reversed.take(10).map((e) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)),
-              child: Text(e, style: Theme.of(context).textTheme.bodyMedium),
-            )),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _promptChip('Bagaimana cara edit foto?'),
+            _promptChip('Tampilkan galeri populer'),
+            _promptChip('Tips pencahayaan karya'),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ..._logs.reversed.take(10).map(
+              (e) => Align(
+                alignment: e.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  constraints: const BoxConstraints(maxWidth: 320),
+                  decoration: BoxDecoration(
+                    gradient: e.isUser
+                        ? const LinearGradient(
+                            colors: [Color(0xFF1554C8), Color(0xFF6E9AFF)],
+                          )
+                        : const LinearGradient(
+                            colors: [Color(0xFFEEF3FF), Color(0xFFDCE7FF)],
+                          ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${e.model} â€¢ ${e.isUser ? 'You' : 'ARSIVA AI'}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: e.isUser
+                              ? Colors.white70
+                              : const Color(0xFF264074),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        e.text,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color:
+                              e.isUser ? Colors.white : const Color(0xFF1A2C55),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
       ],
     );
   }
+
+  Widget _promptChip(String prompt) {
+    return ActionChip(
+      onPressed: () => _send(prompt),
+      label: Text(prompt),
+      avatar: const Icon(Icons.auto_awesome_rounded, size: 16),
+    );
+  }
+}
+
+class _InlineMessage {
+  const _InlineMessage({
+    required this.isUser,
+    required this.text,
+    required this.model,
+  });
+
+  final bool isUser;
+  final String text;
+  final String model;
 }

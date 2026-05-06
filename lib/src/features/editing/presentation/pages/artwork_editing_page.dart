@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/smart_art_image.dart';
 import '../providers/artwork_edit_provider.dart';
 import '../widgets/premium_adjustment_slider.dart';
 
@@ -28,24 +29,31 @@ class ArtworkEditingPage extends ConsumerWidget {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               child: Center(
-                child: AspectRatio(
-                  aspectRatio: state.cropRatio,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      color: Colors.black,
-                      child: InteractiveViewer(
-                        maxScale: state.activeCategory == 'Crop' ? 4 : 1,
-                        minScale: 1,
-                        child: ColorFiltered(
-                          colorFilter: ColorFilter.matrix(state.toColorMatrix()),
-                          child: _imageView(imageUrl),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth;
+                    final previewHeight = constraints.maxHeight;
+                    return SizedBox(
+                      width: width,
+                      height: previewHeight,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          color: Colors.black,
+                          child: InteractiveViewer(
+                            maxScale: state.activeCategory == 'Crop' ? 4 : 1,
+                            minScale: 1,
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.matrix(state.toColorMatrix()),
+                              child: SizedBox.expand(child: _imageView(imageUrl, title)),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -63,20 +71,24 @@ class ArtworkEditingPage extends ConsumerWidget {
           ),
           if (state.activeCategory == 'Adjust')
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
-              child: Column(
-                children: [
-                  PremiumAdjustmentSlider(label: 'Exposure', value: state.exposure, min: -0.5, max: 0.5, onChanged: notifier.setExposure),
-                  const SizedBox(height: 10),
-                  PremiumAdjustmentSlider(label: 'Contrast', value: state.contrast, min: 0.6, max: 1.6, onChanged: notifier.setContrast),
-                  const SizedBox(height: 10),
-                  PremiumAdjustmentSlider(label: 'Saturation', value: state.saturation, min: 0.0, max: 2.0, onChanged: notifier.setSaturation),
-                ],
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: SizedBox(
+                height: 84,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    SizedBox(width: 220, child: PremiumAdjustmentSlider(label: 'Exposure', value: state.exposure, min: -0.5, max: 0.5, onChanged: notifier.setExposure)),
+                    const SizedBox(width: 10),
+                    SizedBox(width: 220, child: PremiumAdjustmentSlider(label: 'Contrast', value: state.contrast, min: 0.6, max: 1.6, onChanged: notifier.setContrast)),
+                    const SizedBox(width: 10),
+                    SizedBox(width: 220, child: PremiumAdjustmentSlider(label: 'Saturation', value: state.saturation, min: 0.0, max: 2.0, onChanged: notifier.setSaturation)),
+                  ],
+                ),
               ),
             ),
           if (state.activeCategory == 'Filter')
             SizedBox(
-              height: 62,
+              height: 56,
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 scrollDirection: Axis.horizontal,
@@ -90,7 +102,7 @@ class ArtworkEditingPage extends ConsumerWidget {
             ),
           if (state.activeCategory == 'Crop')
             SizedBox(
-              height: 62,
+              height: 56,
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 scrollDirection: Axis.horizontal,
@@ -136,12 +148,12 @@ class ArtworkEditingPage extends ConsumerWidget {
       child: OutlinedButton(
         onPressed: () => notifier.applyFilter(value),
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(66, 34),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          minimumSize: const Size(52, 30),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           backgroundColor: selected ? Theme.of(context).colorScheme.primary.withAlpha(25) : null,
         ),
-        child: Text(value),
+        child: Text(value, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
       ),
     );
   }
@@ -158,12 +170,11 @@ class ArtworkEditingPage extends ConsumerWidget {
     );
   }
 
-  Widget _imageView(String imageUrl) {
-    if (imageUrl.isEmpty) return Container(color: const Color(0xFFEFE9DE));
-    return Image.network(
-      imageUrl,
+  Widget _imageView(String imageUrl, String title) {
+    return SmartArtImage(
+      imageUrl: imageUrl,
+      title: title,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => Container(color: const Color(0xFFEFE9DE)),
     );
   }
 }
