@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/artworks_seed.dart';
 import '../../../../core/state/theme_mode_provider.dart';
 import '../../../artwork/presentation/pages/artwork_detail_page.dart';
+import '../../../scan/presentation/pages/scan_page.dart';
+import '../../../upload/presentation/pages/artwork_upload_page.dart';
 
 class GalleryPage extends ConsumerStatefulWidget {
   const GalleryPage({super.key});
@@ -43,6 +45,26 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
         TextField(
           onChanged: (value) => setState(() => _query = value),
           decoration: const InputDecoration(hintText: 'Search gallery', prefixIcon: Icon(Icons.search_rounded)),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ScanPage())),
+                icon: const Icon(Icons.qr_code_scanner_rounded),
+                label: const Text('Scanner'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ArtworkUploadPage())),
+                icon: const Icon(Icons.cloud_upload_outlined),
+                label: const Text('Upload'),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         ...items.map((artwork) {

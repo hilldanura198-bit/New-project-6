@@ -34,10 +34,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     final username = (user?.userMetadata?['username'] ?? user?.email?.split('@').first ?? 'Collector').toString();
     final avatar = user?.userMetadata?['avatar_url']?.toString();
 
-    final items = homeSeedArtworks
-        .where((e) => e.category == _selectedCategory)
-        .map((e) => e.toMap())
-        .toList();
+    final featured = homeSeedArtworks.where((e) => e.category == _selectedCategory).map((e) => e.toMap()).toList();
+    final trending = <Map<String, dynamic>>[
+      ...homeSeedArtworks.map((e) => e.toMap()),
+      ...gallerySeedArtworks.map((e) => e.toMap()),
+    ].take(15).toList();
 
     return CustomScrollView(
       slivers: [
@@ -73,7 +74,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(child: Text('Hello, $username', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF1657C0))),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const NotificationDetailPage())),
+                      icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF1657C0)),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -104,20 +108,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ],
                 const SizedBox(height: 8),
-                SizedBox(
-                  height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (_, i) {
-                      final c = _categories[i];
+                Align(
+                  alignment: Alignment.center,
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _categories.map((c) {
                       return ChoiceChip(
                         label: Text(c),
                         selected: _selectedCategory == c,
                         onSelected: (_) => setState(() => _selectedCategory = c),
                       );
-                    },
-                    separatorBuilder: (_, i) => const SizedBox(width: 8),
-                    itemCount: _categories.length,
+                    }).toList(),
                   ),
                 ),
               ],
@@ -125,13 +127,38 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 90),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
           sliver: SliverMasonryGrid.count(
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childCount: items.length,
-            itemBuilder: (_, i) => _ArtworkCard(artwork: items[i]),
+            childCount: featured.length,
+            itemBuilder: (_, i) => _ArtworkCard(artwork: featured[i]),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Gallery Paling Trending', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                Text('15 artworks', style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 90),
+          sliver: SliverGrid.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: .72,
+            ),
+            itemCount: trending.length,
+            itemBuilder: (_, i) => _TrendingCard(artwork: trending[i]),
           ),
         ),
       ],
@@ -174,6 +201,78 @@ class _ArtworkCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TrendingCard extends StatelessWidget {
+  const _TrendingCard({required this.artwork});
+  final Map<String, dynamic> artwork;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ArtworkDetailPage(artwork: artwork))),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: Theme.of(context).cardColor,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+                child: Image.network(
+                  artwork['image_url'].toString(),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) => Container(color: const Color(0xFFE4E8F2)),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(6),
+              child: Text(
+                artwork['title'].toString(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NotificationDetailPage extends StatelessWidget {
+  const NotificationDetailPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final notices = const [
+      'Karya baru "VELVET BLOOM" telah ditambahkan.',
+      'Favorit Anda mendapat pembaruan metadata.',
+      'Upload Anda berhasil dipublikasikan.',
+      'Koleksi trending minggu ini telah diperbarui.',
+      'Tema Dark Mode aktif di akun Anda.',
+    ];
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Detail Notifikasi')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemBuilder: (_, i) => ListTile(
+          leading: const Icon(Icons.notifications_active_outlined),
+          title: Text(notices[i]),
+          subtitle: const Text('Baru saja'),
+        ),
+        separatorBuilder: (_, i) => const Divider(height: 1),
+        itemCount: notices.length,
       ),
     );
   }

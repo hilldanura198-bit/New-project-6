@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/state/theme_mode_provider.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 
-class OnboardingPage extends StatefulWidget {
+class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
   @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
+  ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage> {
+class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final _controller = PageController();
   int _index = 0;
 
@@ -27,8 +29,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
           padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
           child: Column(
             children: [
-              Text('ARSIVA', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 3)),
-              Text('GALLERY ART', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w700, letterSpacing: 1.2)),
+              Row(
+                children: [
+                  const Spacer(),
+                  Column(
+                    children: [
+                      Text('ARSIVA', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 3)),
+                      Text('GALLERY ART', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w700, letterSpacing: 1.2)),
+                    ],
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+                    icon: const Icon(Icons.dark_mode_outlined, color: Color(0xFF1657C0)),
+                    tooltip: 'Toggle Theme',
+                  ),
+                ],
+              ),
               const SizedBox(height: 10),
               Expanded(
                 child: PageView.builder(
