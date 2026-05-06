@@ -30,12 +30,20 @@ class _LoginPageState extends State<LoginPage> {
     if (_email.text.trim().isEmpty || _password.text.isEmpty) return;
     setState(() => _loading = true);
     try {
-      await Supabase.instance.client.auth.signInWithPassword(email: _email.text.trim(), password: _password.text);
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: _email.text.trim(),
+        password: _password.text,
+      );
       if (!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => const MainShellPage()), (route) => false);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const MainShellPage()),
+        (route) => false,
+      );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -48,23 +56,88 @@ class _LoginPageState extends State<LoginPage> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(22, 22, 22, 30),
           children: [
-            Center(child: Text('ARSIVA GALLERY ART', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 1.5))),
+            Center(
+              child: Text(
+                'ARSIVA GALLERY ART',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: const Color(0xFF1657C0),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ),
             const SizedBox(height: 28),
-            Text('Selamat Datang', textAlign: TextAlign.center, style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              'Selamat Datang',
+              textAlign: TextAlign.center,
+              style: Theme.of(
+                context,
+              ).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 16),
-            TextField(controller: _email, decoration: const InputDecoration(hintText: 'Email', prefixIcon: Icon(Icons.email_outlined))),
+            TextField(
+              controller: _email,
+              decoration: const InputDecoration(
+                hintText: 'Email',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+            ),
             const SizedBox(height: 10),
-            TextField(controller: _password, obscureText: true, decoration: const InputDecoration(hintText: 'Password', prefixIcon: Icon(Icons.lock_outline))),
+            TextField(
+              controller: _password,
+              obscureText: true,
+              decoration: const InputDecoration(
+                hintText: 'Password',
+                prefixIcon: Icon(Icons.lock_outline),
+              ),
+            ),
             const SizedBox(height: 14),
-            SizedBox(height: 50, child: FilledButton(onPressed: _loading ? null : _login, child: _loading ? const CircularProgressIndicator() : const Text('LOGIN'))),
+            SizedBox(
+              height: 50,
+              child: FilledButton(
+                onPressed: _loading ? null : _login,
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : const Text('LOGIN'),
+              ),
+            ),
             const SizedBox(height: 10),
-            SizedBox(height: 50, child: OutlinedButton.icon(onPressed: () async { await Supabase.instance.client.auth.signInWithOAuth(OAuthProvider.google); }, icon: const Icon(Icons.g_mobiledata_rounded), label: const Text('LOGIN WITH GOOGLE'))),
+            SizedBox(
+              height: 50,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  await Supabase.instance.client.auth.signInWithOAuth(
+                    OAuthProvider.google,
+                  );
+                },
+                icon: const Icon(Icons.g_mobiledata_rounded),
+                label: const Text('Login with Google'),
+              ),
+            ),
             const SizedBox(height: 8),
-            SizedBox(height: 50, child: OutlinedButton.icon(onPressed: () {}, icon: const Icon(Icons.phone_rounded), label: const Text('LOGIN WITH PHONE NUMBER'))),
-            const SizedBox(height: 8),
-            Text('Google login menggunakan akun Google Anda. Phone number login tersedia untuk verifikasi OTP.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
+            SizedBox(
+              height: 50,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Login with Phone Number akan tersedia dengan OTP.',
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.phone_rounded),
+                label: const Text('Login with Phone Number'),
+              ),
+            ),
             const SizedBox(height: 10),
-            TextButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SignupPage())), child: const Text('Belum punya akun? Sign Up')),
+            TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SignupPage()),
+              ),
+              child: const Text('Belum punya akun? Sign Up'),
+            ),
           ],
         ),
       ),
@@ -96,7 +169,10 @@ class _MainShellPageState extends State<MainShellPage> {
           ],
         ),
       ),
-      bottomNavigationBar: MainNavigation(currentIndex: _index, onTap: (v) => setState(() => _index = v)),
+      bottomNavigationBar: MainNavigation(
+        currentIndex: _index,
+        onTap: (v) => setState(() => _index = v),
+      ),
     );
   }
 }
@@ -110,8 +186,23 @@ class _AiChatPage extends StatefulWidget {
 
 class _AiChatPageState extends State<_AiChatPage> {
   final _text = TextEditingController();
-  final List<({String role, String model, String text})> _chat = [];
-  String _provider = 'GPT';
+  final List<({bool isUser, String text})> _chat = [];
+
+  void _onVoice() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Voice record aktif. Silakan mulai bicara.'),
+      ),
+    );
+  }
+
+  void _onAttach() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Upload gambar aktif. Pilih gambar dari perangkat.'),
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -122,109 +213,172 @@ class _AiChatPageState extends State<_AiChatPage> {
   void _send([String? preset]) {
     final q = (preset ?? _text.text).trim();
     if (q.isEmpty) return;
-    final answer = _generateReply(q);
     setState(() {
-      _chat.add((role: 'user', model: _provider, text: q));
-      _chat.add((role: 'ai', model: _provider, text: answer));
+      _chat.add((isUser: true, text: q));
+      _chat.add((isUser: false, text: _generateReply(q)));
       _text.clear();
     });
   }
 
   String _generateReply(String question) {
     final q = question.toLowerCase();
-    const guard = 'Saya fokus membantu fitur galeri ARSIVA, scanner, upload, profil, dan editing karya.';
     if (q.contains('edit') || q.contains('filter') || q.contains('crop')) {
-      return 'Coba mulai dari filter Soft lalu atur Contrast 1.1 dan Saturation 1.2 agar detail karya tetap natural. $guard';
+      return 'Mulai dari filter Soft, naikkan Contrast tipis, lalu crop 4:5 agar fokus karya lebih kuat.';
     }
-    if (q.contains('galeri') || q.contains('trending') || q.contains('karya')) {
-      return 'Di halaman Home, cek section "Gallery Paling Trending". Di Gallery, gunakan search + scanner untuk eksplorasi lebih cepat. $guard';
+    if (q.contains('galeri') || q.contains('karya') || q.contains('trending')) {
+      return 'Coba cek Home untuk karya unggulan lalu buka Gallery untuk eksplorasi karya klasik dan modern.';
     }
-    if (q.contains('profil') || q.contains('akun')) {
-      return 'Buka tab Profile untuk update data, avatar, dan pengaturan akun. Jika data tidak muncul, refresh profile dari halaman settings. $guard';
-    }
-    return 'Siap. $guard';
+    return 'Siap, aku bantu semua hal seputar ARSIVA: galeri, profil, dan editing karya seni.';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 98),
       children: [
-        Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(children: [
-            _providerChip('Meta', Icons.public_rounded, const Color(0xFF4A63F2)),
-            const SizedBox(width: 8),
-            _providerChip('GPT', Icons.auto_awesome_rounded, const Color(0xFF16A085)),
-            const SizedBox(width: 8),
-            _providerChip('Gemini', Icons.diamond_rounded, const Color(0xFF8E44AD)),
-          ]),
-        ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            itemCount: _chat.length,
-            itemBuilder: (_, i) {
-              final m = _chat[i];
-              final user = m.role == 'user';
-              return Align(
-                alignment: user ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: user ? [const Color(0xFF4A63F2), const Color(0xFF1657C0)] : [const Color(0xFFEFF3FF), const Color(0xFFDDE7FF)]),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text('${m.model}: ${m.text}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: user ? Colors.white : const Color(0xFF1A2B5C))),
+        Container(
+          padding: const EdgeInsets.fromLTRB(18, 20, 18, 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            image: const DecorationImage(
+              image: NetworkImage(
+                'https://www.transparenttextures.com/patterns/cubes.png',
+              ),
+              fit: BoxFit.cover,
+              opacity: .08,
+            ),
+          ),
+          child: Column(
+            children: [
+              const CircleAvatar(
+                radius: 34,
+                backgroundColor: Color(0xFFDDE7FF),
+                child: Icon(
+                  Icons.chat_bubble_rounded,
+                  size: 34,
+                  color: Color(0xFF5F78F8),
                 ),
-              );
-            },
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Welcome to Chatty',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2A2D4A),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Chat with ARSIVA AI untuk rekomendasi seni, ide kurasi, dan bantuan editing karya.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFF7C7C8E),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: 180,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(99),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF3565E9), Color(0xFF4EA5FF)],
+                    ),
+                  ),
+                  child: TextButton(
+                    onPressed: () => _send('Halo ARSIVA AI'),
+                    child: Text(
+                      'Start Chat',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(14, 8, 14, 18),
+        const SizedBox(height: 14),
+        ..._chat.map((m) {
+          final isUser = m.isUser;
+          return Align(
+            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              constraints: const BoxConstraints(maxWidth: 300),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                gradient: isUser
+                    ? const LinearGradient(
+                        colors: [Color(0xFF2F60E7), Color(0xFF4AA4FF)],
+                      )
+                    : const LinearGradient(
+                        colors: [Color(0xFFEAF3FF), Color(0xFFDDEBFF)],
+                      ),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Text(
+                m.text,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isUser ? Colors.white : const Color(0xFF2A2D4A),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: Row(
             children: [
-              Expanded(child: TextField(controller: _text, decoration: const InputDecoration(hintText: 'Ask anything about art...'))),
-              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _text,
+                  decoration: const InputDecoration(
+                    hintText: 'Type message...',
+                    border: InputBorder.none,
+                  ),
+                  onSubmitted: (_) => _send(),
+                ),
+              ),
+              IconButton(
+                onPressed: _onAttach,
+                icon: const Icon(
+                  Icons.attach_file_rounded,
+                  color: Color(0xFF3565E9),
+                ),
+              ),
+              IconButton(
+                onPressed: _onVoice,
+                icon: const Icon(Icons.mic_rounded, color: Color(0xFF3565E9)),
+              ),
               Container(
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color: const Color(0xFFE6ECFF),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF3565E9), Color(0xFF4EA5FF)],
+                  ),
                 ),
                 child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.mic_rounded, color: Color(0xFF1657C0), size: 22),
-                  tooltip: 'Voice Recorder',
-                ),
-              ),
-              const SizedBox(width: 8),
-              InkWell(
-                onTap: _send,
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: const BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [Color(0xFF4A63F2), Color(0xFF1657C0)])),
-                  child: const Icon(Icons.send_rounded, color: Colors.white),
+                  onPressed: _send,
+                  icon: const Icon(Icons.send_rounded, color: Colors.white),
                 ),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _providerChip(String name, IconData icon, Color color) {
-    final selected = _provider == name;
-    return ChoiceChip(
-      selected: selected,
-      onSelected: (_) => setState(() => _provider = name),
-      label: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 16, color: selected ? Colors.white : color), const SizedBox(width: 4), Text(name)]),
-      selectedColor: color,
-      labelStyle: TextStyle(color: selected ? Colors.white : color, fontWeight: FontWeight.w600),
     );
   }
 }

@@ -16,12 +16,14 @@ class ScanRepository {
           .limit(24);
 
       final List<dynamic> data = response as List<dynamic>;
-      
+
       if (data.isEmpty) {
         throw Exception('Tidak ada karya yang ditemukan di galeri.');
       }
 
-      final artworks = data.map((item) => item as Map<String, dynamic>).toList();
+      final artworks = data
+          .map((item) => item as Map<String, dynamic>)
+          .toList();
       final index = _random.nextInt(artworks.length);
       final selected = artworks[index];
 
@@ -35,7 +37,6 @@ class ScanRepository {
         'medium': selected['medium'],
         'category': selected['category'],
       };
-      
     } on PostgrestException catch (e) {
       throw 'Kesalahan Database: ${e.message}';
     } catch (e) {

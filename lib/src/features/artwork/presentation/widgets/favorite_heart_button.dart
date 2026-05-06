@@ -16,7 +16,8 @@ class FavoriteHeartButton extends ConsumerStatefulWidget {
   final VoidCallback? onChanged;
 
   @override
-  ConsumerState<FavoriteHeartButton> createState() => _FavoriteHeartButtonState();
+  ConsumerState<FavoriteHeartButton> createState() =>
+      _FavoriteHeartButtonState();
 }
 
 class _FavoriteHeartButtonState extends ConsumerState<FavoriteHeartButton>

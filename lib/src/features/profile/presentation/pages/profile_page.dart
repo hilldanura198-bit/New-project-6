@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../auth/presentation/pages/login_page.dart';
 import '../../../favorites/presentation/pages/favorites_page.dart';
 import '../../../upload/presentation/pages/artwork_upload_page.dart';
 import '../providers/profile_provider.dart';
@@ -21,7 +23,9 @@ class HelpPage extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.help_outline_rounded),
             title: Text('Pusat Bantuan ARSIVA'),
-            subtitle: Text('Panduan penggunaan galeri, scanner, upload, dan editing.'),
+            subtitle: Text(
+              'Panduan penggunaan galeri, scanner, upload, dan editing.',
+            ),
           ),
           ListTile(
             leading: Icon(Icons.support_agent_rounded),
@@ -36,6 +40,110 @@ class HelpPage extends StatelessWidget {
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
+
+  Future<void> _showLanguageDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    var selected = prefs.getString('app_language') ?? 'Indonesia';
+    if (!context.mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Language'),
+        content: StatefulBuilder(
+          builder: (context, setDialogState) => DropdownButtonFormField<String>(
+            initialValue: selected,
+            items: const [
+              DropdownMenuItem(value: 'Indonesia', child: Text('Indonesia')),
+              DropdownMenuItem(value: 'English', child: Text('English')),
+            ],
+            onChanged: (value) =>
+                setDialogState(() => selected = value ?? selected),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              await prefs.setString('app_language', selected);
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Language set to $selected')),
+              );
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showLocationDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final controller = TextEditingController(
+      text: prefs.getString('app_location') ?? '',
+    );
+    if (!context.mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Location'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: 'Contoh: Jakarta, Indonesia',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              await prefs.setString('app_location', controller.text.trim());
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Location updated')));
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _clearHistory(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('home_search_history');
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('History berhasil dibersihkan')),
+    );
+  }
+
+  Future<void> _clearCache(BuildContext context) async {
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Cache berhasil dibersihkan')));
+  }
+
+  Future<void> _logout(BuildContext context, WidgetRef ref) async {
+    await ref.read(userProfileProvider.notifier).logout();
+    if (!context.mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,11 +171,18 @@ class ProfilePage extends ConsumerWidget {
               children: [
                 const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
                 const Spacer(),
-                Text('MY PROFILE', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+                Text(
+                  'MY PROFILE',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                ),
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const SettingsPage()),
+                    MaterialPageRoute<void>(
+                      builder: (_) => const SettingsPage(),
+                    ),
                   ),
                   icon: const Icon(Icons.settings_outlined),
                 ),
@@ -76,59 +191,99 @@ class ProfilePage extends ConsumerWidget {
             const SizedBox(height: 18),
             CircleAvatar(
               radius: 44,
-              backgroundImage: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty ? NetworkImage(profile.avatarUrl!) : null,
-              child: profile.avatarUrl == null || profile.avatarUrl!.isEmpty ? const Icon(Icons.person_rounded, size: 46) : null,
+              backgroundImage:
+                  profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
+                  ? NetworkImage(profile.avatarUrl!)
+                  : null,
+              child: profile.avatarUrl == null || profile.avatarUrl!.isEmpty
+                  ? const Icon(Icons.person_rounded, size: 46)
+                  : null,
             ),
             const SizedBox(height: 12),
-            Center(child: Text(profile.username, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700))),
-            Center(child: Text('@${profile.username.toLowerCase().replaceAll(' ', '')}', style: Theme.of(context).textTheme.bodySmall)),
+            Center(
+              child: Text(
+                profile.username,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
+            Center(
+              child: Text(
+                '@${profile.username.toLowerCase().replaceAll(' ', '')}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
             const SizedBox(height: 12),
             Center(
               child: FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: const Color(0xFFE0455F)),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EditProfilePage())),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFFE0455F),
+                ),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                ),
                 child: const Text('Edit Profile'),
               ),
             ),
             const SizedBox(height: 16),
-            ...menus.map((m) => ListTile(
-                  leading: Icon(m.$1),
-                  title: Text(m.$2),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () {
-                    if (m.$2 == 'Favourites') {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(builder: (_) => const FavoritesPage()),
-                      );
-                    }
-                    if (m.$2 == 'Log Out') {
-                      ref.read(userProfileProvider.notifier).logout();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Akun berhasil logout')),
-                      );
-                    }
-                    if (m.$2 == 'Subscription') {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArtworkUploadPage()));
-                    }
-                    if (m.$2 == 'Download Archive') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Berhasil! Karya telah disimpan ke galeri perangkat.'),
-                        ),
-                      );
-                    }
-                    if (m.$2 == 'Koleksi') {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(builder: (_) => const CollectionPage()),
-                      );
-                    }
-                    if (m.$2 == 'Help') {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(builder: (_) => const HelpPage()),
-                      );
-                    }
-                  },
-                )),
+            ...menus.map(
+              (m) => ListTile(
+                leading: Icon(m.$1),
+                title: Text(m.$2),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () {
+                  if (m.$2 == 'Favourites') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const FavoritesPage(),
+                      ),
+                    );
+                  }
+                  if (m.$2 == 'Log Out') {
+                    _logout(context, ref);
+                  }
+                  if (m.$2 == 'Subscription') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ArtworkUploadPage(),
+                      ),
+                    );
+                  }
+                  if (m.$2 == 'Download Archive') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Berhasil! Karya disimpan ke galeri'),
+                      ),
+                    );
+                  }
+                  if (m.$2 == 'Koleksi') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const CollectionPage(),
+                      ),
+                    );
+                  }
+                  if (m.$2 == 'Help') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const HelpPage()),
+                    );
+                  }
+                  if (m.$2 == 'Language') {
+                    _showLanguageDialog(context);
+                  }
+                  if (m.$2 == 'Location') {
+                    _showLocationDialog(context);
+                  }
+                  if (m.$2 == 'Clear Cache') {
+                    _clearCache(context);
+                  }
+                  if (m.$2 == 'Clear History') {
+                    _clearHistory(context);
+                  }
+                },
+              ),
+            ),
           ],
         );
       },

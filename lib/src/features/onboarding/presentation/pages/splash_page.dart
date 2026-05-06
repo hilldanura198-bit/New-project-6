@@ -43,12 +43,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             Expanded(
               child: Center(
                 child: Text(
-                  'ARSIVA GALLERY ART',
+                  'ARSIVA\nGALLERY ART',
+                  textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        letterSpacing: 3,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: Colors.white,
+                    letterSpacing: 3,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ),

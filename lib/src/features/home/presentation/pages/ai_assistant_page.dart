@@ -25,7 +25,13 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
     setState(() {
       _activeModel = model;
       _messages.add(_ChatMessage(role: 'user', model: model, text: prompt));
-      _messages.add(_ChatMessage(role: 'assistant', model: model, text: _artFocusedReply(prompt, model)));
+      _messages.add(
+        _ChatMessage(
+          role: 'assistant',
+          model: model,
+          text: _artFocusedReply(prompt, model),
+        ),
+      );
       _controller.clear();
     });
   }
@@ -35,10 +41,14 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
     const guardrail =
         'Saya fokus pada konteks ARSIVA: konsep seni, referensi karya galeri, dan panduan editing artwork di aplikasi.';
 
-    if (lower.contains('warna') || lower.contains('editing') || lower.contains('filter')) {
+    if (lower.contains('warna') ||
+        lower.contains('editing') ||
+        lower.contains('filter')) {
       return '[$model] Untuk editing karya: mulai dari exposure +10, contrast +8, saturation +6 agar detail tetap natural. $guardrail';
     }
-    if (lower.contains('galeri') || lower.contains('arsiva') || lower.contains('karya')) {
+    if (lower.contains('galeri') ||
+        lower.contains('arsiva') ||
+        lower.contains('karya')) {
       return '[$model] Di ARSIVA, Anda bisa jelajahi karya dari Home/Gallery, simpan favorit, lalu buka detail untuk insight medium, artist, dan tahun. $guardrail';
     }
     if (lower.contains('seni') || lower.contains('art')) {
@@ -60,14 +70,24 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
                 children: [
-                  Text('How can I help you today?', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'How can I help you today?',
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   _SearchComposer(
                     controller: _controller,
                     onSubmit: () => _sendFromModel(_activeModel),
                   ),
                   const SizedBox(height: 16),
-                  Text('Featured Models', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'Featured Models',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
@@ -76,7 +96,10 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                           label: 'Meta',
                           selected: _activeModel == 'Meta',
                           onTap: () => setState(() => _activeModel = 'Meta'),
-                          onSend: () => _sendFromModel('Meta', 'Berikan tips kurasi karya ARSIVA.'),
+                          onSend: () => _sendFromModel(
+                            'Meta',
+                            'Berikan tips kurasi karya ARSIVA.',
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -85,7 +108,10 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                           label: 'GPT',
                           selected: _activeModel == 'GPT',
                           onTap: () => setState(() => _activeModel = 'GPT'),
-                          onSend: () => _sendFromModel('GPT', 'Bagaimana cara analisis visual sebuah lukisan?'),
+                          onSend: () => _sendFromModel(
+                            'GPT',
+                            'Bagaimana cara analisis visual sebuah lukisan?',
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -94,15 +120,25 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                           label: 'Gemini',
                           selected: _activeModel == 'Gemini',
                           onTap: () => setState(() => _activeModel = 'Gemini'),
-                          onSend: () => _sendFromModel('Gemini', 'Saran editing artwork agar tetap natural?'),
+                          onSend: () => _sendFromModel(
+                            'Gemini',
+                            'Saran editing artwork agar tetap natural?',
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 18),
-                  Text('Recent Activities', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'Recent Activities',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 10),
-                  ..._messages.reversed.take(8).map((m) => _ChatTile(message: m)),
+                  ..._messages.reversed
+                      .take(8)
+                      .map((m) => _ChatTile(message: m)),
                   if (_messages.isEmpty)
                     Text(
                       'Belum ada aktivitas. Coba tanya konsep seni atau bantuan editing karya.',
@@ -146,10 +182,7 @@ class _SearchComposer extends StatelessWidget {
               onSubmitted: (_) => onSubmit(),
             ),
           ),
-          IconButton(
-            onPressed: onSubmit,
-            icon: const Icon(Icons.send_rounded),
-          ),
+          IconButton(onPressed: onSubmit, icon: const Icon(Icons.send_rounded)),
         ],
       ),
     );
@@ -177,15 +210,24 @@ class _ModelButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? Theme.of(context).colorScheme.primary.withAlpha(25) : Theme.of(context).cardColor,
+          color: selected
+              ? Theme.of(context).colorScheme.primary.withAlpha(25)
+              : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
+            color: selected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).dividerColor,
           ),
         ),
         child: Column(
           children: [
-            Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
             SizedBox(
               height: 28,
@@ -218,7 +260,10 @@ class _ChatTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${message.model} • ${message.role == 'assistant' ? 'ARSIVA AI' : 'You'}', style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            '${message.model} â€¢ ${message.role == 'assistant' ? 'ARSIVA AI' : 'You'}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 4),
           Text(message.text, style: Theme.of(context).textTheme.bodyMedium),
         ],
@@ -228,7 +273,11 @@ class _ChatTile extends StatelessWidget {
 }
 
 class _ChatMessage {
-  const _ChatMessage({required this.role, required this.model, required this.text});
+  const _ChatMessage({
+    required this.role,
+    required this.model,
+    required this.text,
+  });
 
   final String role;
   final String model;

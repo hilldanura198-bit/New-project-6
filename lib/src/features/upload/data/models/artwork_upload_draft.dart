@@ -17,10 +17,10 @@ class ArtworkUploadDraft {
 
   List<String> validate() {
     final errors = <String>[];
-    
+
     if (title.trim().isEmpty) errors.add('Title is required.');
     if (artist.trim().isEmpty) errors.add('Artist is required.');
-    
+
     if (year.trim().isEmpty) {
       errors.add('Year is required.');
     } else {
@@ -29,11 +29,11 @@ class ArtworkUploadDraft {
         errors.add('Year must be a valid number.');
       }
     }
-    
+
     if (medium.trim().isEmpty) errors.add('Medium is required.');
     if (description.trim().isEmpty) errors.add('Description is required.');
     if (category.trim().isEmpty) errors.add('Category is required.');
-    
+
     return errors;
   }
 }

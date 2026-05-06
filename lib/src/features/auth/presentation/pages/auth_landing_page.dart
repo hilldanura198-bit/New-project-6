@@ -59,8 +59,10 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
     final q = (preset ?? _controller.text).trim();
     if (q.isEmpty) return;
     setState(() {
-      _logs.add('$_model • You: $q');
-      _logs.add('$_model • ARSIVA AI: Saya hanya menjawab seputar galeri ARSIVA dan panduan editing karya.');
+      _logs.add('$_model â€¢ You: $q');
+      _logs.add(
+        '$_model â€¢ ARSIVA AI: Saya hanya menjawab seputar galeri ARSIVA dan panduan editing karya.',
+      );
       _controller.clear();
     });
   }
@@ -70,30 +72,72 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 100),
       children: [
-        Text('How can I help you today?', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+        Text(
+          'How can I help you today?',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        ),
         const SizedBox(height: 12),
         TextField(
           controller: _controller,
-          decoration: const InputDecoration(hintText: 'Ask anything about art...', prefixIcon: Icon(Icons.search_rounded)),
+          decoration: const InputDecoration(
+            hintText: 'Ask anything about art...',
+            prefixIcon: Icon(Icons.search_rounded),
+          ),
           onSubmitted: (_) => _send(),
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'Meta'); _send('Tips kurasi galeri ARSIVA'); }, child: const Text('Meta'))),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() => _model = 'Meta');
+                  _send('Tips kurasi galeri ARSIVA');
+                },
+                child: const Text('Meta'),
+              ),
+            ),
             const SizedBox(width: 8),
-            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'GPT'); _send('Analisis visual karya seni'); }, child: const Text('GPT'))),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() => _model = 'GPT');
+                  _send('Analisis visual karya seni');
+                },
+                child: const Text('GPT'),
+              ),
+            ),
             const SizedBox(width: 8),
-            Expanded(child: OutlinedButton(onPressed: () { setState(() => _model = 'Gemini'); _send('Tips filter dan crop karya'); }, child: const Text('Gemini'))),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() => _model = 'Gemini');
+                  _send('Tips filter dan crop karya');
+                },
+                child: const Text('Gemini'),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
-        ..._logs.reversed.take(10).map((entry) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)),
-              child: Text(entry, style: Theme.of(context).textTheme.bodyMedium),
-            )),
+        ..._logs.reversed
+            .take(10)
+            .map(
+              (entry) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  entry,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ),
       ],
     );
   }

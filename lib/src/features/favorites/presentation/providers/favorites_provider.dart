@@ -9,16 +9,18 @@ final favoritesRepositoryProvider = Provider<FavoritesRepository>(
   (ref) => FavoritesRepository(Supabase.instance.client),
 );
 
-final favoritesProvider = StateNotifierProvider<FavoritesNotifier, FavoritesState>(
-  (ref) => FavoritesNotifier(ref.read(favoritesRepositoryProvider))..start(),
-);
+final favoritesProvider =
+    StateNotifierProvider<FavoritesNotifier, FavoritesState>(
+      (ref) =>
+          FavoritesNotifier(ref.read(favoritesRepositoryProvider))..start(),
+    );
 
-final favoriteArtworksProvider = FutureProvider<List<Map<String, dynamic>>>(
-  (ref) async {
-    final ids = ref.watch(favoritesProvider).ids;
-    return ref.read(favoritesRepositoryProvider).fetchFavoriteArtworks(ids);
-  },
-);
+final favoriteArtworksProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
+  final ids = ref.watch(favoritesProvider).ids;
+  return ref.read(favoritesRepositoryProvider).fetchFavoriteArtworks(ids);
+});
 
 class FavoritesState {
   const FavoritesState({

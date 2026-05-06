@@ -8,8 +8,12 @@ class AppTheme {
   static const Color accentBlue = Color(0xFF6E80F8);
 
   static TextTheme _textTheme(Brightness brightness) {
-    final bodyColor = brightness == Brightness.dark ? const Color(0xFFE7E9F2) : const Color(0xFF1B2134);
-    final mutedColor = brightness == Brightness.dark ? const Color(0xFFB6BED8) : const Color(0xFF5C647F);
+    final bodyColor = brightness == Brightness.dark
+        ? const Color(0xFFE7E9F2)
+        : const Color(0xFF1B2134);
+    final mutedColor = brightness == Brightness.dark
+        ? const Color(0xFFB6BED8)
+        : const Color(0xFF5C647F);
 
     return TextTheme(
       displayLarge: GoogleFonts.poppins(
@@ -69,7 +73,7 @@ class AppTheme {
     return base.copyWith(
       scaffoldBackgroundColor: background,
       colorScheme: scheme,
-      textTheme: _textTheme(Brightness.light),
+      textTheme: GoogleFonts.poppinsTextTheme(_textTheme(Brightness.light)),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -112,7 +116,7 @@ class AppTheme {
     return base.copyWith(
       scaffoldBackgroundColor: darkBackground,
       colorScheme: scheme,
-      textTheme: _textTheme(Brightness.dark),
+      textTheme: GoogleFonts.poppinsTextTheme(_textTheme(Brightness.dark)),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,

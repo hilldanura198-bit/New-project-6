@@ -12,11 +12,7 @@ final scanControllerProvider = StateNotifierProvider<ScanController, ScanState>(
 );
 
 class ScanState {
-  const ScanState({
-    this.isScanning = false,
-    this.error,
-    this.detectedArtwork,
-  });
+  const ScanState({this.isScanning = false, this.error, this.detectedArtwork});
 
   final bool isScanning;
   final String? error;
@@ -51,10 +47,7 @@ class ScanController extends StateNotifier<ScanState> {
       );
       return artwork;
     } catch (e) {
-      state = state.copyWith(
-        isScanning: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isScanning: false, error: e.toString());
       return null;
     }
   }

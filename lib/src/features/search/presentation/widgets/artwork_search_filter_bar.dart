@@ -141,10 +141,7 @@ class ArtworkSearchFilterBar extends StatelessWidget {
           isExpanded: true,
           hint: Text(label),
           items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Text('All $label'),
-            ),
+            DropdownMenuItem<String?>(value: null, child: Text('All $label')),
             ...items.map(
               (item) => DropdownMenuItem<String?>(
                 value: item,

@@ -47,7 +47,10 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Settings',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -67,12 +70,17 @@ class SettingsPage extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
-                  themeMode == ThemeMode.dark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                  themeMode == ThemeMode.dark
+                      ? Icons.dark_mode_rounded
+                      : Icons.light_mode_rounded,
                   color: Colors.amber[700],
                   size: 20,
                 ),
               ),
-              title: const Text('Dark Mode', style: TextStyle(fontWeight: FontWeight.w600)),
+              title: const Text(
+                'Dark Mode',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               trailing: Switch.adaptive(
                 value: themeMode == ThemeMode.dark,
                 activeThumbColor: Theme.of(context).primaryColor,
@@ -108,11 +116,17 @@ class SettingsPage extends ConsumerWidget {
               icon: const Icon(Icons.logout_rounded, color: Colors.red),
               label: const Text(
                 'Logout Account',
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Colors.red, width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
           ),
@@ -120,7 +134,9 @@ class SettingsPage extends ConsumerWidget {
           Center(
             child: Text(
               'ARSIVA v1.0.0',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey),
             ),
           ),
         ],
@@ -134,10 +150,10 @@ class SettingsPage extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
-              letterSpacing: 0.5,
-            ),
+          fontWeight: FontWeight.bold,
+          color: Colors.grey[600],
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }

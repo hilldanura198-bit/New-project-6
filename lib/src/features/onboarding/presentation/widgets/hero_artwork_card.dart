@@ -38,7 +38,11 @@ class HeroArtworkCard extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.auto_awesome, color: Color(0xFF0047AB), size: 16),
+                const Icon(
+                  Icons.auto_awesome,
+                  color: Color(0xFF0047AB),
+                  size: 16,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   'Featured',

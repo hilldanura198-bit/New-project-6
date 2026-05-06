@@ -35,7 +35,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   }
 
   Future<void> _pickAvatar() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1200, imageQuality: 88);
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      imageQuality: 88,
+    );
     if (file != null) setState(() => _avatar = file);
   }
 
@@ -56,7 +60,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       password: _passwordController.text.trim(),
     );
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile berhasil diperbarui.')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profile berhasil diperbarui.')),
+    );
     Navigator.pop(context);
   }
 
@@ -73,7 +79,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('EDIT PROFILE'),
-        actions: [IconButton(onPressed: _save, icon: const Icon(Icons.check_rounded))],
+        actions: [
+          IconButton(onPressed: _save, icon: const Icon(Icons.check_rounded)),
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -87,8 +95,17 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     radius: 42,
                     backgroundImage: _avatar != null
                         ? FileImage(File(_avatar!.path))
-                        : (profile?.avatarUrl != null && profile!.avatarUrl!.isNotEmpty ? NetworkImage(profile.avatarUrl!) : null) as ImageProvider?,
-                    child: (_avatar == null && (profile?.avatarUrl == null || profile!.avatarUrl!.isEmpty)) ? const Icon(Icons.person_rounded, size: 42) : null,
+                        : (profile?.avatarUrl != null &&
+                                      profile!.avatarUrl!.isNotEmpty
+                                  ? NetworkImage(profile.avatarUrl!)
+                                  : null)
+                              as ImageProvider?,
+                    child:
+                        (_avatar == null &&
+                            (profile?.avatarUrl == null ||
+                                profile!.avatarUrl!.isEmpty))
+                        ? const Icon(Icons.person_rounded, size: 42)
+                        : null,
                   ),
                   Positioned(
                     bottom: 0,
@@ -97,8 +114,15 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       onTap: _pickAvatar,
                       child: Container(
                         padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(color: Color(0xFF1657C0), shape: BoxShape.circle),
-                        child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF1657C0),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        ),
                       ),
                     ),
                   ),
@@ -120,11 +144,18 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   Widget _field(String label, TextEditingController c, {bool obscure = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 6),
-        TextFormField(controller: c, obscureText: obscure, validator: (v) => (v == null || v.isEmpty) ? 'Required' : null),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: c,
+            obscureText: obscure,
+            validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+          ),
+        ],
+      ),
     );
   }
 }

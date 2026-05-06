@@ -1,8 +1,10 @@
-import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../gallery/presentation/providers/gallery_refresh_provider.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../data/models/artwork_upload_draft.dart';
 import '../providers/artwork_upload_provider.dart';
@@ -26,6 +28,7 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
   final _picker = ImagePicker();
 
   XFile? _pickedImage;
+  Uint8List? _pickedImageBytes;
   bool _isSuccess = false;
 
   @override
@@ -51,23 +54,31 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final image = await _picker.pickImage(
-      source: source,
-      maxWidth: 2200,
-      imageQuality: 90,
-    );
-
-    if (image != null) {
+    try {
+      final image = await _picker.pickImage(
+        source: source,
+        maxWidth: 2200,
+        imageQuality: 90,
+      );
+      if (!mounted || image == null) return;
+      final bytes = await image.readAsBytes();
       setState(() {
         _pickedImage = image;
+        _pickedImageBytes = bytes;
       });
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal memilih file gambar.')),
+      );
     }
   }
 
   Future<void> _submit() async {
     ref.read(artworkUploadProvider.notifier).clearMessages();
-    
-    if (_pickedImage == null || !_formKey.currentState!.validate()) {
+
+    final formState = _formKey.currentState;
+    if (_pickedImage == null || formState == null || !formState.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('data belum lengkap'),
@@ -77,8 +88,10 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
       return;
     }
 
-    final bytes = await _pickedImage!.readAsBytes();
-    final ext = _pickedImage!.path.split('.').last;
+    final picked = _pickedImage;
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    final ext = picked.path.split('.').last;
     final draft = ArtworkUploadDraft(
       title: _titleController.text,
       artist: _artistController.text,
@@ -88,23 +101,22 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
       category: _categoryController.text,
     );
 
-    final ok = await ref.read(artworkUploadProvider.notifier).uploadArtwork(
-          draft: draft,
-          imageBytes: bytes,
-          fileExt: ext,
-        );
+    final ok = await ref
+        .read(artworkUploadProvider.notifier)
+        .uploadArtwork(draft: draft, imageBytes: bytes, fileExt: ext);
 
     if (!mounted) return;
 
     if (ok) {
+      ref.read(galleryRefreshTickProvider.notifier).state++;
       setState(() {
         _isSuccess = true;
       });
     } else {
       final error = ref.read(artworkUploadProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error ?? 'Upload gagal.'))
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error ?? 'Upload gagal.')));
     }
   }
 
@@ -117,6 +129,7 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
     _categoryController.clear();
     setState(() {
       _pickedImage = null;
+      _pickedImageBytes = null;
       _isSuccess = false;
     });
     final userProfile = ref.read(userProfileProvider).value;
@@ -144,12 +157,20 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                     color: Color(0xFFE8F5E9),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check_circle, size: 80, color: Colors.green),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 80,
+                    color: Colors.green,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 const Text(
                   'UPLOAD SUCCESS',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -165,7 +186,9 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFF3F51B5),
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: const Text('Return to Home'),
                   ),
@@ -188,7 +211,10 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Upload Artwork', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Upload Artwork',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -208,7 +234,9 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
               child: Container(
                 height: 200,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF5F5F5),
+                  color: isDark
+                      ? const Color(0xFF2C2C2C)
+                      : const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: Colors.grey.withValues(alpha: 0.3),
@@ -219,14 +247,21 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.cloud_upload_outlined, size: 40, color: Colors.grey[600]),
+                          Icon(
+                            Icons.cloud_upload_outlined,
+                            size: 40,
+                            color: Colors.grey[600],
+                          ),
                           const SizedBox(height: 8),
-                          Text('Please upload your image', style: TextStyle(color: Colors.grey[600])),
+                          Text(
+                            'Please upload your image',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
                         ],
                       )
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.file(File(_pickedImage!.path), fit: BoxFit.cover),
+                        child: _previewImage(),
                       ),
               ),
             ),
@@ -255,7 +290,8 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                     controller: _yearController,
                     label: 'Year',
                     keyboardType: TextInputType.number,
-                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -263,7 +299,8 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                   child: PremiumUploadField(
                     controller: _categoryController,
                     label: 'Category',
-                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
                   ),
                 ),
               ],
@@ -289,7 +326,11 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                 color: const Color(0xFF3F51B5),
               ),
               const SizedBox(height: 8),
-              Center(child: Text('${(uploadState.progress * 100).round()}% Uploading...')),
+              Center(
+                child: Text(
+                  '${(uploadState.progress * 100).round()}% Uploading...',
+                ),
+              ),
               const SizedBox(height: 20),
             ],
             SizedBox(
@@ -300,9 +341,14 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
                   backgroundColor: const Color(0xFFFFC107),
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: const Text(
+                  'Continue',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -310,5 +356,16 @@ class _ArtworkUploadPageState extends ConsumerState<ArtworkUploadPage> {
         ),
       ),
     );
+  }
+
+  Widget _previewImage() {
+    final bytes = _pickedImageBytes;
+    if (bytes == null) {
+      return const Center(child: Text('File tidak dapat ditampilkan'));
+    }
+    if (kIsWeb) {
+      return Image.memory(bytes, fit: BoxFit.cover, width: double.infinity);
+    }
+    return Image.memory(bytes, fit: BoxFit.cover, width: double.infinity);
   }
 }

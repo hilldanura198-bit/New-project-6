@@ -14,9 +14,10 @@ final profileRepositoryProvider = Provider<ProfileRepository>(
   (ref) => ProfileRepository(ref.watch(supabaseClientProvider)),
 );
 
-final userProfileProvider = AsyncNotifierProvider<UserProfileNotifier, UserProfile>(
-  UserProfileNotifier.new,
-);
+final userProfileProvider =
+    AsyncNotifierProvider<UserProfileNotifier, UserProfile>(
+      UserProfileNotifier.new,
+    );
 
 class UserProfileNotifier extends AsyncNotifier<UserProfile> {
   ProfileRepository get _repository => ref.read(profileRepositoryProvider);
@@ -67,7 +68,10 @@ class UserProfileNotifier extends AsyncNotifier<UserProfile> {
 
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final avatarUrl = await _repository.uploadAvatar(bytes: bytes, fileExt: fileExt);
+      final avatarUrl = await _repository.uploadAvatar(
+        bytes: bytes,
+        fileExt: fileExt,
+      );
       return _repository.updateProfile(
         username: current.username,
         bio: current.bio,
@@ -75,6 +79,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfile> {
       );
     });
   }
+
   Future<void> logout() async {
     await Supabase.instance.client.auth.signOut();
   }

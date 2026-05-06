@@ -11,8 +11,8 @@ final artworkUploadRepositoryProvider = Provider<ArtworkUploadRepository>(
 
 final artworkUploadProvider =
     StateNotifierProvider<ArtworkUploadNotifier, ArtworkUploadState>(
-  (ref) => ArtworkUploadNotifier(ref.read(artworkUploadRepositoryProvider)),
-);
+      (ref) => ArtworkUploadNotifier(ref.read(artworkUploadRepositoryProvider)),
+    );
 
 class ArtworkUploadState {
   const ArtworkUploadState({
@@ -86,8 +86,8 @@ class ArtworkUploadNotifier extends StateNotifier<ArtworkUploadState> {
       state = ArtworkUploadState(
         isUploading: false,
         progress: 0,
-        error: e.toString().contains('PostgrestException') 
-            ? 'Gagal menyimpan data ke database.' 
+        error: e.toString().contains('PostgrestException')
+            ? 'Gagal menyimpan data ke database.'
             : 'Gagal mengupload gambar. Periksa koneksi internet.',
       );
       return false;

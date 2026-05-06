@@ -49,10 +49,14 @@ class PremiumUploadField extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
           // Padding dalam agar teks tidak mepet ke pinggir container
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none, // Hilangkan garis bawaan karena sudah pakai container
+            borderSide: BorderSide
+                .none, // Hilangkan garis bawaan karena sudah pakai container
           ),
           filled: false,
         ),

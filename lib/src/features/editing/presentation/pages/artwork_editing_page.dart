@@ -22,7 +22,10 @@ class ArtworkEditingPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text('Editing', style: Theme.of(context).textTheme.titleLarge),
         actions: [
-          IconButton(onPressed: notifier.reset, icon: const Icon(Icons.refresh_rounded)),
+          IconButton(
+            onPressed: notifier.reset,
+            icon: const Icon(Icons.refresh_rounded),
+          ),
         ],
       ),
       body: Column(
@@ -31,91 +34,184 @@ class ArtworkEditingPage extends ConsumerWidget {
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-                child: Center(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 260),
-                    curve: Curves.easeInOut,
-                    constraints: const BoxConstraints(maxHeight: 410),
-                    child: AspectRatio(
-                      aspectRatio: state.cropRatio,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          color: Colors.black,
-                          child: InteractiveViewer(
-                            maxScale: state.activeCategory == 'Crop' ? 4 : 1,
-                            minScale: 1,
-                            child: ColorFiltered(
-                              colorFilter: ColorFilter.matrix(state.toColorMatrix()),
-                              child: SizedBox.expand(child: _imageView(imageUrl, title)),
+                child: Column(
+                  children: [
+                    Center(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 260),
+                        curve: Curves.easeInOut,
+                        constraints: const BoxConstraints(maxHeight: 420),
+                        child: AspectRatio(
+                          aspectRatio: state.cropRatio,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              color: Colors.black,
+                              child: InteractiveViewer(
+                                maxScale: state.activeCategory == 'Crop'
+                                    ? 4
+                                    : 1,
+                                minScale: 1,
+                                child: ColorFiltered(
+                                  colorFilter: ColorFilter.matrix(
+                                    state.toColorMatrix(),
+                                  ),
+                                  child: SizedBox.expand(
+                                    child: _imageView(imageUrl, title),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _toolChip(context, notifier, state.activeCategory, 'Adjust', Icons.tune_rounded),
-                _toolChip(context, notifier, state.activeCategory, 'Filter', Icons.filter_rounded),
-                _toolChip(context, notifier, state.activeCategory, 'Crop', Icons.crop_rounded),
-              ],
-            ),
-          ),
-          if (state.activeCategory == 'Adjust')
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-              child: SizedBox(
-                height: 84,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    SizedBox(width: 220, child: PremiumAdjustmentSlider(label: 'Exposure', value: state.exposure, min: -0.5, max: 0.5, onChanged: notifier.setExposure)),
-                    const SizedBox(width: 10),
-                    SizedBox(width: 220, child: PremiumAdjustmentSlider(label: 'Contrast', value: state.contrast, min: 0.6, max: 1.6, onChanged: notifier.setContrast)),
-                    const SizedBox(width: 10),
-                    SizedBox(width: 220, child: PremiumAdjustmentSlider(label: 'Saturation', value: state.saturation, min: 0.0, max: 2.0, onChanged: notifier.setSaturation)),
+                    const SizedBox(height: 14),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _toolChip(
+                            context,
+                            notifier,
+                            state.activeCategory,
+                            'Adjust',
+                            Icons.tune_rounded,
+                          ),
+                          _toolChip(
+                            context,
+                            notifier,
+                            state.activeCategory,
+                            'Filter',
+                            Icons.filter_rounded,
+                          ),
+                          _toolChip(
+                            context,
+                            notifier,
+                            state.activeCategory,
+                            'Crop',
+                            Icons.crop_rounded,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    if (state.activeCategory == 'Adjust')
+                      Column(
+                        children: [
+                          PremiumAdjustmentSlider(
+                            label: 'Exposure',
+                            value: state.exposure,
+                            min: -0.5,
+                            max: 0.5,
+                            onChanged: notifier.setExposure,
+                          ),
+                          const SizedBox(height: 10),
+                          PremiumAdjustmentSlider(
+                            label: 'Contrast',
+                            value: state.contrast,
+                            min: 0.6,
+                            max: 1.6,
+                            onChanged: notifier.setContrast,
+                          ),
+                          const SizedBox(height: 10),
+                          PremiumAdjustmentSlider(
+                            label: 'Saturation',
+                            value: state.saturation,
+                            min: 0.0,
+                            max: 2.0,
+                            onChanged: notifier.setSaturation,
+                          ),
+                        ],
+                      ),
+                    if (state.activeCategory == 'Filter')
+                      SizedBox(
+                        height: 56,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            _filterButton(
+                              context,
+                              notifier,
+                              state.selectedFilter,
+                              'Natural',
+                            ),
+                            _filterButton(
+                              context,
+                              notifier,
+                              state.selectedFilter,
+                              'Soft',
+                            ),
+                            _filterButton(
+                              context,
+                              notifier,
+                              state.selectedFilter,
+                              'Dramatic',
+                            ),
+                            _filterButton(
+                              context,
+                              notifier,
+                              state.selectedFilter,
+                              'Vivid',
+                            ),
+                            _filterButton(
+                              context,
+                              notifier,
+                              state.selectedFilter,
+                              'Mono',
+                            ),
+                            _filterButton(
+                              context,
+                              notifier,
+                              state.selectedFilter,
+                              'Warm',
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (state.activeCategory == 'Crop')
+                      SizedBox(
+                        height: 56,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            _ratioButton(
+                              context,
+                              notifier,
+                              state.cropRatio,
+                              'Free',
+                              1.3,
+                            ),
+                            _ratioButton(
+                              context,
+                              notifier,
+                              state.cropRatio,
+                              '1:1',
+                              1,
+                            ),
+                            _ratioButton(
+                              context,
+                              notifier,
+                              state.cropRatio,
+                              '4:5',
+                              0.8,
+                            ),
+                            _ratioButton(
+                              context,
+                              notifier,
+                              state.cropRatio,
+                              '16:9',
+                              1.78,
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
             ),
-          if (state.activeCategory == 'Filter')
-            SizedBox(
-              height: 56,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _filterButton(context, notifier, state.selectedFilter, 'Natural'),
-                  _filterButton(context, notifier, state.selectedFilter, 'Soft'),
-                  _filterButton(context, notifier, state.selectedFilter, 'Dramatic'),
-                  _filterButton(context, notifier, state.selectedFilter, 'Vivid'),
-                  _filterButton(context, notifier, state.selectedFilter, 'Mono'),
-                  _filterButton(context, notifier, state.selectedFilter, 'Warm'),
-                ],
-              ),
-            ),
-          if (state.activeCategory == 'Crop')
-            SizedBox(
-              height: 56,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _ratioButton(context, notifier, state.cropRatio, 'Free', 1.3),
-                  _ratioButton(context, notifier, state.cropRatio, '1:1', 1),
-                  _ratioButton(context, notifier, state.cropRatio, '4:5', 0.8),
-                  _ratioButton(context, notifier, state.cropRatio, '16:9', 1.78),
-                ],
-              ),
-            ),
+          ),
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -133,17 +229,29 @@ class ArtworkEditingPage extends ConsumerWidget {
     );
   }
 
-  Widget _toolChip(BuildContext context, ArtworkEditNotifier notifier, String current, String value, IconData icon) {
+  Widget _toolChip(
+    BuildContext context,
+    ArtworkEditNotifier notifier,
+    String current,
+    String value,
+    IconData icon,
+  ) {
     final selected = current == value;
     return ChoiceChip(
       selected: selected,
       onSelected: (_) => notifier.setEditCategory(value),
       avatar: Icon(icon, size: 18),
       label: Text(value),
+      visualDensity: VisualDensity.compact,
     );
   }
 
-  Widget _filterButton(BuildContext context, ArtworkEditNotifier notifier, String current, String value) {
+  Widget _filterButton(
+    BuildContext context,
+    ArtworkEditNotifier notifier,
+    String current,
+    String value,
+  ) {
     final selected = current == value;
     return Padding(
       padding: const EdgeInsets.only(right: 6),
@@ -152,32 +260,46 @@ class ArtworkEditingPage extends ConsumerWidget {
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(52, 30),
           padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          backgroundColor: selected ? Theme.of(context).colorScheme.primary.withAlpha(25) : null,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          backgroundColor: selected
+              ? Theme.of(context).colorScheme.primary.withAlpha(25)
+              : null,
         ),
-        child: Text(value, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
+        child: Text(
+          value,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+        ),
       ),
     );
   }
 
-  Widget _ratioButton(BuildContext context, ArtworkEditNotifier notifier, double current, String label, double ratio) {
+  Widget _ratioButton(
+    BuildContext context,
+    ArtworkEditNotifier notifier,
+    double current,
+    String label,
+    double ratio,
+  ) {
     final selected = (current - ratio).abs() < 0.01;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: OutlinedButton(
         onPressed: () => notifier.setCropRatio(ratio),
-        style: OutlinedButton.styleFrom(backgroundColor: selected ? Theme.of(context).colorScheme.primary.withAlpha(25) : null),
+        style: OutlinedButton.styleFrom(
+          backgroundColor: selected
+              ? Theme.of(context).colorScheme.primary.withAlpha(25)
+              : null,
+        ),
         child: Text(label),
       ),
     );
   }
 
   Widget _imageView(String imageUrl, String title) {
-    return SmartArtImage(
-      imageUrl: imageUrl,
-      title: title,
-      fit: BoxFit.cover,
-    );
+    return SmartArtImage(imageUrl: imageUrl, title: title, fit: BoxFit.cover);
   }
 }
-

@@ -18,13 +18,20 @@ class MainNavigation extends StatelessWidget {
         color: const Color(0xFF111111),
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
-          BoxShadow(color: Color(0x33000000), blurRadius: 16, offset: Offset(0, 6)),
+          BoxShadow(
+            color: Color(0x33000000),
+            blurRadius: 16,
+            offset: Offset(0, 6),
+          ),
         ],
       ),
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
           labelTextStyle: WidgetStateProperty.all(
-            Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+            Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         child: NavigationBar(
@@ -35,10 +42,29 @@ class MainNavigation extends StatelessWidget {
           onDestinationSelected: onTap,
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_outlined, color: Colors.white), selectedIcon: Icon(Icons.home_rounded, color: Colors.white), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.grid_view_rounded, color: Colors.white), selectedIcon: Icon(Icons.grid_on_rounded, color: Colors.white), label: 'Gallery'),
-            NavigationDestination(icon: Icon(Icons.auto_awesome_outlined, color: Colors.white), selectedIcon: Icon(Icons.auto_awesome_rounded, color: Colors.white), label: 'AI'),
-            NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white), selectedIcon: Icon(Icons.person_rounded, color: Colors.white), label: 'Profile'),
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined, color: Colors.white),
+              selectedIcon: Icon(Icons.home_rounded, color: Colors.white),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.grid_view_rounded, color: Colors.white),
+              selectedIcon: Icon(Icons.grid_on_rounded, color: Colors.white),
+              label: 'Gallery',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.auto_awesome_outlined, color: Colors.white),
+              selectedIcon: Icon(
+                Icons.auto_awesome_rounded,
+                color: Colors.white,
+              ),
+              label: 'AI',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline_rounded, color: Colors.white),
+              selectedIcon: Icon(Icons.person_rounded, color: Colors.white),
+              label: 'Profile',
+            ),
           ],
         ),
       ),

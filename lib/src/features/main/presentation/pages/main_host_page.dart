@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -117,10 +117,9 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
             const SizedBox(height: 8),
             Text(
               'Voice Recorder Siap',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             Text(
@@ -140,19 +139,27 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
   }
 
   Future<void> _onAttachImage() async {
-    final image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+    );
     if (!mounted || image == null) return;
     setState(() {
-      _logs.add(_InlineMessage(
-        isUser: true,
-        text: 'Mengunggah gambar: ${image.name}',
-        model: _model,
-      ));
-      _logs.add(_InlineMessage(
-        isUser: false,
-        text: 'Gambar diterima. Saya siap bantu analisis warna, komposisi, dan langkah editing berikutnya.',
-        model: _model,
-      ));
+      _logs.add(
+        _InlineMessage(
+          isUser: true,
+          text: 'Mengunggah gambar: ${image.name}',
+          model: _model,
+        ),
+      );
+      _logs.add(
+        _InlineMessage(
+          isUser: false,
+          text:
+              'Gambar diterima. Saya siap bantu analisis warna, komposisi, dan langkah editing berikutnya.',
+          model: _model,
+        ),
+      );
     });
   }
 
@@ -160,7 +167,9 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
     final username =
-        (user?.userMetadata?['username'] ?? user?.email?.split('@').first ?? 'Collector')
+        (user?.userMetadata?['username'] ??
+                user?.email?.split('@').first ??
+                'Collector')
             .toString();
 
     return ListView(
@@ -185,17 +194,21 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
                     color: Colors.white.withAlpha(38),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 30),
+                  child: const Icon(
+                    Icons.smart_toy_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Halo! Saya asisten AI ARSIVA. Apa yang ingin kamu buat hari ini?',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white,
-                          height: 1.4,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: Colors.white,
+                      height: 1.4,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -240,9 +253,18 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
                   onSubmitted: (_) => _send(),
                 ),
               ),
-              IconButton(onPressed: _onAttachImage, icon: const Icon(Icons.attach_file_rounded)),
-              IconButton(onPressed: _onVoiceTap, icon: const Icon(Icons.mic_rounded)),
-              IconButton(onPressed: _send, icon: const Icon(Icons.send_rounded)),
+              IconButton(
+                onPressed: _onAttachImage,
+                icon: const Icon(Icons.attach_file_rounded),
+              ),
+              IconButton(
+                onPressed: _onVoiceTap,
+                icon: const Icon(Icons.mic_rounded),
+              ),
+              IconButton(
+                onPressed: _send,
+                icon: const Icon(Icons.send_rounded),
+              ),
             ],
           ),
         ),
@@ -291,9 +313,13 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
           ],
         ),
         const SizedBox(height: 12),
-        ..._logs.reversed.take(10).map(
+        ..._logs.reversed
+            .take(10)
+            .map(
               (e) => Align(
-                alignment: e.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                alignment: e.isUser
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.all(12),
@@ -314,19 +340,20 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
                       Text(
                         '${e.model} • ${e.isUser ? 'You' : 'ARSIVA AI'}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: e.isUser
-                                  ? Colors.white70
-                                  : const Color(0xFF264074),
-                              fontWeight: FontWeight.w600,
-                            ),
+                          color: e.isUser
+                              ? Colors.white70
+                              : const Color(0xFF264074),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         e.text,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color:
-                                  e.isUser ? Colors.white : const Color(0xFF1A2C55),
-                            ),
+                          color: e.isUser
+                              ? Colors.white
+                              : const Color(0xFF1A2C55),
+                        ),
                       ),
                     ],
                   ),

@@ -77,7 +77,11 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                         onTap: () => Navigator.pop(context),
                         child: CircleAvatar(
                           backgroundColor: Colors.white.withValues(alpha: 0.2),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                       Row(
@@ -88,7 +92,9 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                             width: _currentPage == index ? 20 : 6,
                             height: 6,
                             decoration: BoxDecoration(
-                              color: _currentPage == index ? Colors.white : Colors.white.withValues(alpha: 0.4),
+                              color: _currentPage == index
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.4),
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
@@ -96,7 +102,11 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                       ),
                       CircleAvatar(
                         backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        child: const Icon(Icons.share_rounded, color: Colors.white, size: 20),
+                        child: const Icon(
+                          Icons.share_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ],
                   ),
@@ -106,7 +116,9 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,9 +142,15 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                            _buildInfoTag(Icons.history_edu_rounded, 'Classical'),
+                            _buildInfoTag(
+                              Icons.history_edu_rounded,
+                              'Classical',
+                            ),
                             const SizedBox(width: 10),
-                            _buildInfoTag(Icons.remove_red_eye_rounded, '360° View'),
+                            _buildInfoTag(
+                              Icons.remove_red_eye_rounded,
+                              '360° View',
+                            ),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -157,7 +175,9 @@ class _GalleryDetailPageState extends State<GalleryDetailPage> {
                               borderRadius: BorderRadius.circular(18),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF42275A).withValues(alpha: 0.4),
+                                  color: const Color(
+                                    0xFF42275A,
+                                  ).withValues(alpha: 0.4),
                                   blurRadius: 15,
                                   offset: const Offset(0, 8),
                                 ),

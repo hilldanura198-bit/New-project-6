@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import '../../../../core/widgets/smart_art_image.dart';
 import '../../../artwork/presentation/pages/artwork_detail_page.dart';
 import '../../../artwork/presentation/widgets/favorite_heart_button.dart';
 import '../providers/favorites_provider.dart';
@@ -34,7 +35,9 @@ class FavoritesPage extends ConsumerWidget {
                 const SizedBox(height: 10),
                 Text(
                   favoritesState.error!,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
                 ),
               ],
               const SizedBox(height: 18),
@@ -63,7 +66,8 @@ class FavoritesPage extends ConsumerWidget {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute<void>(
-                                builder: (_) => ArtworkDetailPage(artwork: artwork),
+                                builder: (_) =>
+                                    ArtworkDetailPage(artwork: artwork),
                               ),
                             );
                           },
@@ -73,12 +77,11 @@ class FavoritesPage extends ConsumerWidget {
                               children: [
                                 AspectRatio(
                                   aspectRatio: 3 / 4,
-                                  child: Image.network(
-                                    (artwork['image_url'] ?? '').toString(),
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => const ColoredBox(
-                                      color: Color(0xFFEFE9DE),
-                                    ),
+                                  child: SmartArtImage(
+                                    imageUrl: (artwork['image_url'] ?? '')
+                                        .toString(),
+                                    title: (artwork['title'] ?? 'Untitled')
+                                        .toString(),
                                   ),
                                 ),
                                 const Positioned.fill(
@@ -104,7 +107,10 @@ class FavoritesPage extends ConsumerWidget {
                                     (artwork['title'] ?? 'Untitled').toString(),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
                                           color: const Color(0xFFF6E8CB),
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -113,7 +119,9 @@ class FavoritesPage extends ConsumerWidget {
                                 Positioned(
                                   top: 8,
                                   right: 8,
-                                  child: FavoriteHeartButton(artworkId: artworkId),
+                                  child: FavoriteHeartButton(
+                                    artworkId: artworkId,
+                                  ),
                                 ),
                               ],
                             ),
@@ -128,7 +136,8 @@ class FavoritesPage extends ConsumerWidget {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                 ),
               ),
             ],

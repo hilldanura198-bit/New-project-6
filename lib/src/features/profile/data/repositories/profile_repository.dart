@@ -66,7 +66,8 @@ class ProfileRepository {
     if (password != null && password.isNotEmpty) {
       await _client.auth.updateUser(UserAttributes(password: password));
     }
-    if ((name != null && name.isNotEmpty) || (phone != null && phone.isNotEmpty)) {
+    if ((name != null && name.isNotEmpty) ||
+        (phone != null && phone.isNotEmpty)) {
       final mergedMeta = <String, dynamic>{...?user.userMetadata};
       if (name != null && name.isNotEmpty) {
         mergedMeta['name'] = name;
@@ -98,15 +99,15 @@ class ProfileRepository {
   }) async {
     final user = _currentUser;
     final safeExt = fileExt.isEmpty ? 'jpg' : fileExt;
-    final filePath = '${user.id}/avatar_${DateTime.now().millisecondsSinceEpoch}.$safeExt';
+    final filePath =
+        '${user.id}/avatar_${DateTime.now().millisecondsSinceEpoch}.$safeExt';
 
-    await _client.storage.from(_bucket).uploadBinary(
+    await _client.storage
+        .from(_bucket)
+        .uploadBinary(
           filePath,
           bytes,
-          fileOptions: const FileOptions(
-            cacheControl: '3600',
-            upsert: true,
-          ),
+          fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
         );
 
     return _client.storage.from(_bucket).getPublicUrl(filePath);

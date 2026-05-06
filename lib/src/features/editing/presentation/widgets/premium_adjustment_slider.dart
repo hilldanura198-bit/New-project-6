@@ -53,8 +53,9 @@ class PremiumAdjustmentSlider extends StatelessWidget {
                     const Color(0xFFC8A96B),
                     t,
                   ),
-                  inactiveTrackColor:
-                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.24),
+                  inactiveTrackColor: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.24),
                   thumbColor: const Color(0xFFC8A96B),
                 ),
                 child: Slider(

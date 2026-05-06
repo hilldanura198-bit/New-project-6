@@ -62,7 +62,8 @@ class GuestExplorePage extends StatelessWidget {
                           bottom: 10,
                           child: Text(
                             'Preview ${i + 1}',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -80,10 +81,17 @@ class GuestExplorePage extends StatelessWidget {
                 child: FilledButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute<void>(builder: (_) => const LoginPage()),
+                      MaterialPageRoute<void>(
+                        builder: (_) => const LoginPage(),
+                      ),
                     );
                   },
-                  child: Text('Login', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
+                  child: Text(
+                    'Login',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(color: Colors.white),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -93,10 +101,15 @@ class GuestExplorePage extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute<void>(builder: (_) => const SignupPage()),
+                      MaterialPageRoute<void>(
+                        builder: (_) => const SignupPage(),
+                      ),
                     );
                   },
-                  child: Text('Sign Up', style: Theme.of(context).textTheme.titleMedium),
+                  child: Text(
+                    'Sign Up',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ),
             ],

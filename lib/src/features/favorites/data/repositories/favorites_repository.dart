@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/data/artworks_seed.dart';
+
 class FavoritesRepository {
   FavoritesRepository(this._client);
 
@@ -29,13 +31,10 @@ class FavoritesRepository {
 
   Future<void> saveFavorite(String artworkId) async {
     final user = _currentUser;
-    await _client.from('favorites').upsert(
-      {
-        'user_id': user.id,
-        'artwork_id': artworkId,
-      },
-      onConflict: 'user_id,artwork_id',
-    );
+    await _client.from('favorites').upsert({
+      'user_id': user.id,
+      'artwork_id': artworkId,
+    }, onConflict: 'user_id,artwork_id');
   }
 
   Future<void> removeFavorite(String artworkId) async {
@@ -47,17 +46,27 @@ class FavoritesRepository {
         .eq('artwork_id', artworkId);
   }
 
-  Future<List<Map<String, dynamic>>> fetchFavoriteArtworks(Set<String> ids) async {
+  Future<List<Map<String, dynamic>>> fetchFavoriteArtworks(
+    Set<String> ids,
+  ) async {
     if (ids.isEmpty) {
       return const [];
     }
 
-    final response = await _client
-        .from('artworks')
-        .select('*')
-        .inFilter('id', ids.toList())
-        .order('created_at', ascending: false);
+    try {
+      final response = await _client
+          .from('artworks')
+          .select('*')
+          .inFilter('id', ids.toList())
+          .order('created_at', ascending: false);
+      final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
+      if (rows.isNotEmpty) return rows;
+    } catch (_) {}
 
-    return (response as List<dynamic>).cast<Map<String, dynamic>>();
+    final fallback = [...homeSeedArtworks, ...gallerySeedArtworks]
+        .map((e) => e.toMap())
+        .where((e) => ids.contains(e['id'].toString()))
+        .toList();
+    return fallback;
   }
 }

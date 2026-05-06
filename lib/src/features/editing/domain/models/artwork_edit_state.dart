@@ -29,10 +29,26 @@ class ArtworkEditState {
     const double lumB = 0.0722;
 
     return <double>[
-      cv * ((1 - sv) * lumR + sv), cv * ((1 - sv) * lumG), cv * ((1 - sv) * lumB), 0, ev,
-      cv * ((1 - sv) * lumR), cv * ((1 - sv) * lumG + sv), cv * ((1 - sv) * lumB), 0, ev,
-      cv * ((1 - sv) * lumR), cv * ((1 - sv) * lumG), cv * ((1 - sv) * lumB + sv), 0, ev,
-      0, 0, 0, 1, 0,
+      cv * ((1 - sv) * lumR + sv),
+      cv * ((1 - sv) * lumG),
+      cv * ((1 - sv) * lumB),
+      0,
+      ev,
+      cv * ((1 - sv) * lumR),
+      cv * ((1 - sv) * lumG + sv),
+      cv * ((1 - sv) * lumB),
+      0,
+      ev,
+      cv * ((1 - sv) * lumR),
+      cv * ((1 - sv) * lumG),
+      cv * ((1 - sv) * lumB + sv),
+      0,
+      ev,
+      0,
+      0,
+      0,
+      1,
+      0,
     ];
   }
 

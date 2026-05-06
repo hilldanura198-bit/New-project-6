@@ -23,9 +23,12 @@ class ArtworkUploadRepository {
     try {
       final user = _currentUser;
       final safeExt = fileExt.isEmpty ? 'jpg' : fileExt;
-      final path = '${user.id}/artwork_${DateTime.now().millisecondsSinceEpoch}.$safeExt';
+      final path =
+          '${user.id}/artwork_${DateTime.now().millisecondsSinceEpoch}.$safeExt';
 
-      await _client.storage.from(_bucket).uploadBinary(
+      await _client.storage
+          .from(_bucket)
+          .uploadBinary(
             path,
             bytes,
             fileOptions: FileOptions(

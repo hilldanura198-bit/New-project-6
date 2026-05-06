@@ -14,11 +14,15 @@ Future<void> main() async {
 
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return Material(
-      color: Colors.transparent,
+      color: const Color(0xFFF8D7DA),
       child: Center(
-        child: Text(
-          'Something went wrong',
-          style: const TextStyle(color: Colors.transparent),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            'Something went wrong.\n${details.exceptionAsString()}',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Color(0xFF721C24), fontSize: 12),
+          ),
         ),
       ),
     );
@@ -26,9 +30,5 @@ Future<void> main() async {
 
   await SupabaseBootstrap.initialize();
 
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
