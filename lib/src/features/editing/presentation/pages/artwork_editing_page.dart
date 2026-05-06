@@ -132,10 +132,13 @@ class ArtworkEditingPage extends ConsumerWidget {
   Widget _filterButton(BuildContext context, ArtworkEditNotifier notifier, String current, String value) {
     final selected = current == value;
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: 6),
       child: OutlinedButton(
         onPressed: () => notifier.applyFilter(value),
         style: OutlinedButton.styleFrom(
+          minimumSize: const Size(66, 34),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           backgroundColor: selected ? Theme.of(context).colorScheme.primary.withAlpha(25) : null,
         ),
         child: Text(value),

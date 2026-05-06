@@ -122,11 +122,27 @@ class _AiChatPageState extends State<_AiChatPage> {
   void _send([String? preset]) {
     final q = (preset ?? _text.text).trim();
     if (q.isEmpty) return;
+    final answer = _generateReply(q);
     setState(() {
       _chat.add((role: 'user', model: _provider, text: q));
-      _chat.add((role: 'ai', model: _provider, text: 'Saya membantu topik galeri ARSIVA dan editing karya saja.'));
+      _chat.add((role: 'ai', model: _provider, text: answer));
       _text.clear();
     });
+  }
+
+  String _generateReply(String question) {
+    final q = question.toLowerCase();
+    const guard = 'Saya fokus membantu fitur galeri ARSIVA, scanner, upload, profil, dan editing karya.';
+    if (q.contains('edit') || q.contains('filter') || q.contains('crop')) {
+      return 'Coba mulai dari filter Soft lalu atur Contrast 1.1 dan Saturation 1.2 agar detail karya tetap natural. $guard';
+    }
+    if (q.contains('galeri') || q.contains('trending') || q.contains('karya')) {
+      return 'Di halaman Home, cek section "Gallery Paling Trending". Di Gallery, gunakan search + scanner untuk eksplorasi lebih cepat. $guard';
+    }
+    if (q.contains('profil') || q.contains('akun')) {
+      return 'Buka tab Profile untuk update data, avatar, dan pengaturan akun. Jika data tidak muncul, refresh profile dari halaman settings. $guard';
+    }
+    return 'Siap. $guard';
   }
 
   @override
@@ -170,6 +186,20 @@ class _AiChatPageState extends State<_AiChatPage> {
           child: Row(
             children: [
               Expanded(child: TextField(controller: _text, decoration: const InputDecoration(hintText: 'Ask anything about art...'))),
+              const SizedBox(width: 8),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: const Color(0xFFE6ECFF),
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.mic_rounded, color: Color(0xFF1657C0), size: 22),
+                  tooltip: 'Voice Recorder',
+                ),
+              ),
               const SizedBox(width: 8),
               InkWell(
                 onTap: _send,
