@@ -32,6 +32,12 @@ class ArtworkEditNotifier extends StateNotifier<ArtworkEditState> {
       case 'Vivid':
         state = state.copyWith(selectedFilter: name, exposure: 0.03, contrast: 1.1, saturation: 1.35);
         break;
+      case 'Mono':
+        state = state.copyWith(selectedFilter: name, exposure: -0.01, contrast: 1.18, saturation: 0.1);
+        break;
+      case 'Warm':
+        state = state.copyWith(selectedFilter: name, exposure: 0.05, contrast: 1.02, saturation: 1.08);
+        break;
       default:
         state = state.copyWith(selectedFilter: 'Natural', exposure: 0, contrast: 1, saturation: 1);
     }

@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../gallery/presentation/pages/gallery_page.dart';
@@ -57,6 +58,7 @@ class _InlineAIAssistantPage extends StatefulWidget {
 
 class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
   final _controller = TextEditingController();
+  final _picker = ImagePicker();
   final List<_InlineMessage> _logs = [];
   String _model = 'GPT';
 
@@ -137,6 +139,23 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
     );
   }
 
+  Future<void> _onAttachImage() async {
+    final image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
+    if (!mounted || image == null) return;
+    setState(() {
+      _logs.add(_InlineMessage(
+        isUser: true,
+        text: 'Mengunggah gambar: ${image.name}',
+        model: _model,
+      ));
+      _logs.add(_InlineMessage(
+        isUser: false,
+        text: 'Gambar diterima. Saya siap bantu analisis warna, komposisi, dan langkah editing berikutnya.',
+        model: _model,
+      ));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
@@ -147,6 +166,41 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 100),
       children: [
+        if (_logs.isEmpty)
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6933F5), Color(0xFF2C67FF)],
+              ),
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(38),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 30),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Halo! Saya asisten AI ARSIVA. Apa yang ingin kamu buat hari ini?',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                          height: 1.4,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -186,6 +240,7 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
                   onSubmitted: (_) => _send(),
                 ),
               ),
+              IconButton(onPressed: _onAttachImage, icon: const Icon(Icons.attach_file_rounded)),
               IconButton(onPressed: _onVoiceTap, icon: const Icon(Icons.mic_rounded)),
               IconButton(onPressed: _send, icon: const Icon(Icons.send_rounded)),
             ],
@@ -246,12 +301,12 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
                   decoration: BoxDecoration(
                     gradient: e.isUser
                         ? const LinearGradient(
-                            colors: [Color(0xFF1554C8), Color(0xFF6E9AFF)],
+                            colors: [Color(0xFF7A33F9), Color(0xFF2A67FF)],
                           )
                         : const LinearGradient(
-                            colors: [Color(0xFFEEF3FF), Color(0xFFDCE7FF)],
+                            colors: [Color(0xFFF2EEFF), Color(0xFFE1ECFF)],
                           ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,19 +314,19 @@ class _InlineAIAssistantPageState extends State<_InlineAIAssistantPage> {
                       Text(
                         '${e.model} • ${e.isUser ? 'You' : 'ARSIVA AI'}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: e.isUser
-                              ? Colors.white70
-                              : const Color(0xFF264074),
-                          fontWeight: FontWeight.w600,
-                        ),
+                              color: e.isUser
+                                  ? Colors.white70
+                                  : const Color(0xFF264074),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         e.text,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color:
-                              e.isUser ? Colors.white : const Color(0xFF1A2C55),
-                        ),
+                              color:
+                                  e.isUser ? Colors.white : const Color(0xFF1A2C55),
+                            ),
                       ),
                     ],
                   ),

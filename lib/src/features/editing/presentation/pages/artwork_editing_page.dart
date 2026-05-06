@@ -28,16 +28,16 @@ class ArtworkEditingPage extends ConsumerWidget {
       body: Column(
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-              child: Center(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final width = constraints.maxWidth;
-                    final previewHeight = constraints.maxHeight;
-                    return SizedBox(
-                      width: width,
-                      height: previewHeight,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+                child: Center(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 260),
+                    curve: Curves.easeInOut,
+                    constraints: const BoxConstraints(maxHeight: 410),
+                    child: AspectRatio(
+                      aspectRatio: state.cropRatio,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
@@ -52,8 +52,8 @@ class ArtworkEditingPage extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -97,6 +97,8 @@ class ArtworkEditingPage extends ConsumerWidget {
                   _filterButton(context, notifier, state.selectedFilter, 'Soft'),
                   _filterButton(context, notifier, state.selectedFilter, 'Dramatic'),
                   _filterButton(context, notifier, state.selectedFilter, 'Vivid'),
+                  _filterButton(context, notifier, state.selectedFilter, 'Mono'),
+                  _filterButton(context, notifier, state.selectedFilter, 'Warm'),
                 ],
               ),
             ),
@@ -107,10 +109,10 @@ class ArtworkEditingPage extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 scrollDirection: Axis.horizontal,
                 children: [
-                  _ratioButton(context, notifier, state.cropRatio, '3:4', 0.75),
+                  _ratioButton(context, notifier, state.cropRatio, 'Free', 1.3),
                   _ratioButton(context, notifier, state.cropRatio, '1:1', 1),
                   _ratioButton(context, notifier, state.cropRatio, '4:5', 0.8),
-                  _ratioButton(context, notifier, state.cropRatio, '9:16', 0.5625),
+                  _ratioButton(context, notifier, state.cropRatio, '16:9', 1.78),
                 ],
               ),
             ),
