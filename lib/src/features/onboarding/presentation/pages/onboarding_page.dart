@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/state/theme_mode_provider.dart';
+import '../../../../core/widgets/smart_art_image.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -34,8 +35,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   const Spacer(),
                   Column(
                     children: [
-                      Text('ARSIVA', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 3)),
-                      Text('GALLERY ART', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w700, letterSpacing: 1.2)),
+                      Text('ARSIVA GALLERY ART', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 1.6)),
                     ],
                   ),
                   const Spacer(),
@@ -59,7 +59,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         Expanded(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(26),
-                            child: Image.network(s.$3, fit: BoxFit.cover, width: double.infinity, errorBuilder: (context, error, stackTrace) => Container(color: const Color(0xFFE4E8F2))),
+                            child: SmartArtImage(
+                              imageUrl: s.$3,
+                              title: s.$1,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 14),
