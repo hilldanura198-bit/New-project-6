@@ -32,6 +32,10 @@ class UserProfileNotifier extends AsyncNotifier<UserProfile> {
   Future<void> saveProfile({
     required String username,
     required String bio,
+    String? email,
+    String? name,
+    String? phone,
+    String? password,
   }) async {
     final current = state.valueOrNull;
     if (current == null) {
@@ -44,6 +48,10 @@ class UserProfileNotifier extends AsyncNotifier<UserProfile> {
         username: username,
         bio: bio,
         avatarUrl: current.avatarUrl,
+        email: email,
+        name: name,
+        phone: phone,
+        password: password,
       ),
     );
   }

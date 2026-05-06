@@ -53,12 +53,33 @@ class ProfileRepository {
     required String username,
     required String bio,
     String? avatarUrl,
+    String? email,
+    String? name,
+    String? phone,
+    String? password,
   }) async {
     final user = _currentUser;
 
+    if (email != null && email.isNotEmpty && email != user.email) {
+      await _client.auth.updateUser(UserAttributes(email: email));
+    }
+    if (password != null && password.isNotEmpty) {
+      await _client.auth.updateUser(UserAttributes(password: password));
+    }
+    if ((name != null && name.isNotEmpty) || (phone != null && phone.isNotEmpty)) {
+      final mergedMeta = <String, dynamic>{...?user.userMetadata};
+      if (name != null && name.isNotEmpty) {
+        mergedMeta['name'] = name;
+      }
+      if (phone != null && phone.isNotEmpty) {
+        mergedMeta['phone'] = phone;
+      }
+      await _client.auth.updateUser(UserAttributes(data: mergedMeta));
+    }
+
     final updateData = {
       'id': user.id,
-      'email': user.email,
+      'email': email ?? user.email,
       'username': username,
       'bio': bio,
     };

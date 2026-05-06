@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../favorites/presentation/pages/favorites_page.dart';
 import '../../../upload/presentation/pages/artwork_upload_page.dart';
 import '../providers/profile_provider.dart';
 import 'edit_profile_page.dart';
@@ -60,6 +61,11 @@ class ProfilePage extends ConsumerWidget {
                   title: Text(m.$2),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () {
+                    if (m.$2 == 'Favourites') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(builder: (_) => const FavoritesPage()),
+                      );
+                    }
                     if (m.$2 == 'Log Out') {
                       ref.read(userProfileProvider.notifier).logout();
                     }

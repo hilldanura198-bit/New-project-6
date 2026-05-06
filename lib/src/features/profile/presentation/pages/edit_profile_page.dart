@@ -47,8 +47,16 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       final ext = _avatar!.path.split('.').last;
       await notifier.uploadAvatar(bytes: bytes, fileExt: ext);
     }
-    await notifier.saveProfile(username: _usernameController.text.trim(), bio: _bioController.text.trim());
+    await notifier.saveProfile(
+      username: _usernameController.text.trim(),
+      bio: _bioController.text.trim(),
+      email: _emailController.text.trim(),
+      name: _nameController.text.trim(),
+      phone: _phoneController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
     if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile berhasil diperbarui.')));
     Navigator.pop(context);
   }
 
@@ -56,9 +64,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   Widget build(BuildContext context) {
     final profile = ref.watch(userProfileProvider).valueOrNull;
     if (profile != null && _usernameController.text.isEmpty) {
-      _nameController.text = profile.username;
+      _nameController.text = (profile.username);
       _emailController.text = profile.email;
       _usernameController.text = profile.username;
+      _bioController.text = profile.bio;
     }
 
     return Scaffold(
