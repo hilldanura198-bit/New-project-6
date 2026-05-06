@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/data/artworks_seed.dart';
 import '../../../../core/state/theme_mode_provider.dart';
+import '../../../../core/widgets/smart_art_image.dart';
 import '../../../artwork/presentation/pages/artwork_detail_page.dart';
 import '../../../artwork/presentation/widgets/favorite_heart_button.dart';
 
@@ -53,8 +54,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('ARSIVA', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 3)),
-                          Text('GALLERY ART', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w700, letterSpacing: 1.5)),
+                          Text('ARSIVA GALLERY ART', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color(0xFF1657C0), fontWeight: FontWeight.w800, letterSpacing: 1.4)),
                         ],
                       ),
                     ),
@@ -108,6 +108,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ],
                 const SizedBox(height: 8),
+                SizedBox(
+                  height: 174,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (_, i) => _HeroTripCard(artwork: trending[i]),
+                    separatorBuilder: (_, i) => const SizedBox(width: 10),
+                    itemCount: trending.length > 5 ? 5 : trending.length,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.center,
                   child: Wrap(
@@ -183,7 +193,13 @@ class _ArtworkCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: Stack(
           children: [
-            AspectRatio(aspectRatio: 3 / 4, child: Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: const Color(0xFFE4E8F2)))),
+            AspectRatio(
+              aspectRatio: 3 / 4,
+              child: SmartArtImage(
+                imageUrl: imageUrl,
+                title: title,
+              ),
+            ),
             const Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x12000000), Color(0x00000000), Color(0xB0000000)])),
@@ -225,11 +241,9 @@ class _TrendingCard extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
-                child: Image.network(
-                  artwork['image_url'].toString(),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) => Container(color: const Color(0xFFE4E8F2)),
+                child: SmartArtImage(
+                  imageUrl: artwork['image_url'].toString(),
+                  title: artwork['title'].toString(),
                 ),
               ),
             ),
@@ -249,30 +263,129 @@ class _TrendingCard extends StatelessWidget {
   }
 }
 
-class NotificationDetailPage extends StatelessWidget {
-  const NotificationDetailPage({super.key});
+class _HeroTripCard extends StatelessWidget {
+  const _HeroTripCard({required this.artwork});
+
+  final Map<String, dynamic> artwork;
 
   @override
   Widget build(BuildContext context) {
-    final notices = const [
-      'Karya baru "VELVET BLOOM" telah ditambahkan.',
-      'Favorit Anda mendapat pembaruan metadata.',
-      'Upload Anda berhasil dipublikasikan.',
-      'Koleksi trending minggu ini telah diperbarui.',
-      'Tema Dark Mode aktif di akun Anda.',
-    ];
+    final imageUrl = artwork['image_url'].toString();
+    final title = artwork['title'].toString();
+    final artist = artwork['artist_name'].toString();
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => ArtworkDetailPage(artwork: artwork)),
+      ),
+      child: SizedBox(
+        width: 240,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              SmartArtImage(imageUrl: imageUrl, title: title),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0x33000000), Color(0xBA000000)],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 14,
+                right: 14,
+                bottom: 14,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    Text(
+                      artist,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
+class NotificationDetailPage extends StatelessWidget {
+  const NotificationDetailPage({super.key});
+
+  static const _fallbackNotices = [
+    'Karya baru "VELVET BLOOM" telah ditambahkan.',
+    'Favorit Anda mendapat pembaruan metadata.',
+    'Upload Anda berhasil dipublikasikan.',
+    'Koleksi trending minggu ini telah diperbarui.',
+    'Tema Dark Mode aktif di akun Anda.',
+  ];
+
+  Future<List<String>> _loadNotices() async {
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) return _fallbackNotices;
+    try {
+      final rows = await client
+          .from('notifications')
+          .select('title, message')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .limit(20);
+      final notices = rows
+          .map<String>((row) {
+            final title = (row['title'] ?? '').toString().trim();
+            final message = (row['message'] ?? '').toString().trim();
+            if (title.isEmpty && message.isEmpty) return '';
+            return title.isEmpty ? message : '$title - $message';
+          })
+          .where((e) => e.isNotEmpty)
+          .toList();
+      return notices.isEmpty ? _fallbackNotices : notices;
+    } catch (_) {
+      return _fallbackNotices;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Detail Notifikasi')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemBuilder: (_, i) => ListTile(
-          leading: const Icon(Icons.notifications_active_outlined),
-          title: Text(notices[i]),
-          subtitle: const Text('Baru saja'),
-        ),
-        separatorBuilder: (_, i) => const Divider(height: 1),
-        itemCount: notices.length,
+      body: FutureBuilder<List<String>>(
+        future: _loadNotices(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final notices = snapshot.data!;
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemBuilder: (_, i) => ListTile(
+              leading: const Icon(Icons.notifications_active_outlined),
+              title: Text(notices[i]),
+              subtitle: const Text('Baru saja'),
+            ),
+            separatorBuilder: (_, i) => const Divider(height: 1),
+            itemCount: notices.length,
+          );
+        },
       ),
     );
   }
