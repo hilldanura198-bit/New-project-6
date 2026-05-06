@@ -22,6 +22,32 @@ class _HomePageState extends ConsumerState<HomePage> {
   final List<String> _history = [];
 
   static const _categories = ['Modern', 'Minimal', 'Botanical', 'Classic'];
+  static const Map<String, List<Map<String, String>>> _categoryCatalog = {
+    'Modern': [
+      {'title': 'Silent Geometry', 'artist': 'A. Runa', 'image_url': 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'City Echo', 'artist': 'D. Kieran', 'image_url': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Neon Balance', 'artist': 'C. Yara', 'image_url': 'https://images.unsplash.com/photo-1504198266285-165a79b27f07?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Wide Strokes', 'artist': 'M. Leon', 'image_url': 'https://images.unsplash.com/photo-1576765607924-3f34465b72f7?auto=format&fit=crop&w=1200&q=80'},
+    ],
+    'Minimal': [
+      {'title': 'Ivory Pause', 'artist': 'S. Taro', 'image_url': 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Single Line', 'artist': 'K. Alen', 'image_url': 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Quiet Form', 'artist': 'L. Wren', 'image_url': 'https://images.unsplash.com/photo-1459908676235-d5f02a50184b?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Void Rhythm', 'artist': 'P. Mina', 'image_url': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=80'},
+    ],
+    'Botanical': [
+      {'title': 'Garden Manuscript', 'artist': 'V. Hale', 'image_url': 'https://images.unsplash.com/photo-1446071103084-c257b5f70672?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Bloom Heritage', 'artist': 'I. Nara', 'image_url': 'https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Wild Petals', 'artist': 'R. Dia', 'image_url': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Forest Haze', 'artist': 'U. Moen', 'image_url': 'https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?auto=format&fit=crop&w=1200&q=80'},
+    ],
+    'Classic': [
+      {'title': 'Hall of Marble', 'artist': 'B. Caden', 'image_url': 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Royal Canvas', 'artist': 'J. Oryn', 'image_url': 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Museum Noon', 'artist': 'T. Soren', 'image_url': 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&w=1200&q=80'},
+      {'title': 'Palace Frame', 'artist': 'E. Quinn', 'image_url': 'https://images.unsplash.com/photo-1529429617124-95b109e86bb8?auto=format&fit=crop&w=1200&q=80'},
+    ],
+  };
 
   @override
   void dispose() {
@@ -35,7 +61,17 @@ class _HomePageState extends ConsumerState<HomePage> {
     final username = (user?.userMetadata?['username'] ?? user?.email?.split('@').first ?? 'Collector').toString();
     final avatar = user?.userMetadata?['avatar_url']?.toString();
 
-    final featured = homeSeedArtworks.where((e) => e.category == _selectedCategory).map((e) => e.toMap()).toList();
+    final featured = (_categoryCatalog[_selectedCategory] ?? const [])
+        .asMap()
+        .entries
+        .map((entry) => {
+              'id': 'cat_${_selectedCategory}_${entry.key}',
+              'title': entry.value['title']!,
+              'artist_name': entry.value['artist']!,
+              'image_url': entry.value['image_url']!,
+              'category': _selectedCategory,
+            })
+        .toList();
     final trending = <Map<String, dynamic>>[
       ...homeSeedArtworks.map((e) => e.toMap()),
       ...gallerySeedArtworks.map((e) => e.toMap()),
@@ -125,7 +161,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                     runSpacing: 8,
                     children: _categories.map((c) {
                       return ChoiceChip(
-                        label: Text(c),
+                        label: Text(
+                          c,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
                         selected: _selectedCategory == c,
                         onSelected: (_) => setState(() => _selectedCategory = c),
                       );

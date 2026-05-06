@@ -40,7 +40,7 @@ class SmartArtImage extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1A4AA6), Color(0xFF5B82F5)],
+          colors: [Color(0xFF2A2A2E), Color(0xFF575762)],
         ),
       ),
       child: Center(
@@ -60,4 +60,3 @@ class SmartArtImage extends StatelessWidget {
     );
   }
 }
-
