@@ -18,18 +18,36 @@ class ProfileRepository {
 
   Future<UserProfile> fetchProfile() async {
     final user = _currentUser;
+    final metadata = user.userMetadata ?? const <String, dynamic>{};
+    final metadataName = (metadata['name'] ?? metadata['full_name'] ?? '')
+        .toString()
+        .trim();
+    final metadataPhone = (user.phone ?? metadata['phone'] ?? '')
+        .toString()
+        .trim();
+    final metadataUsername =
+        (metadata['preferred_username'] ??
+                metadata['user_name'] ??
+                metadataName)
+            .toString()
+            .trim();
+    final fallbackUsername = metadataUsername.isNotEmpty
+        ? metadataUsername
+        : (user.email?.split('@').first ?? 'Collector');
+
     final response = await _client
         .from('profiles')
-        .select('id, email, username, bio, avatar_url, role')
+        .select('id, email, username, full_name, phone, bio, avatar_url, role')
         .eq('id', user.id)
         .maybeSingle();
 
     if (response == null) {
-      final fallbackUsername = user.email?.split('@').first ?? 'Collector';
       final newProfile = {
         'id': user.id,
         'email': user.email,
         'username': fallbackUsername,
+        'full_name': metadataName,
+        'phone': metadataPhone,
         'bio': '',
         'role': 'user',
       };
@@ -40,6 +58,8 @@ class ProfileRepository {
         id: user.id,
         email: user.email ?? '',
         username: fallbackUsername,
+        fullName: metadataName,
+        phone: metadataPhone,
         bio: '',
         avatarUrl: null,
         role: 'user',
@@ -84,6 +104,12 @@ class ProfileRepository {
       'username': username,
       'bio': bio,
     };
+    if (name != null) {
+      updateData['full_name'] = name;
+    }
+    if (phone != null) {
+      updateData['phone'] = phone;
+    }
 
     if (avatarUrl != null) {
       updateData['avatar_url'] = avatarUrl;
