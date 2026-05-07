@@ -88,11 +88,32 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithPhone() async {
-    if (_phone.text.trim().isEmpty) return;
+    _phone.clear();
+    _otp.clear();
+    final phone = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Login dengan Nomor HP'),
+        content: TextField(
+          controller: _phone,
+          keyboardType: TextInputType.phone,
+          decoration: const InputDecoration(hintText: 'Nomor HP (+628...)'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, _phone.text.trim()),
+            child: const Text('Lanjut'),
+          ),
+        ],
+      ),
+    );
+    if (phone == null || phone.isEmpty) return;
     try {
-      await Supabase.instance.client.auth.signInWithOtp(
-        phone: _phone.text.trim(),
-      );
+      await Supabase.instance.client.auth.signInWithOtp(phone: phone);
       if (!mounted) return;
       await showDialog<void>(
         context: context,
@@ -111,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
             FilledButton(
               onPressed: () async {
                 await Supabase.instance.client.auth.verifyOTP(
-                  phone: _phone.text.trim(),
+                  phone: phone,
                   token: _otp.text.trim(),
                   type: OtpType.sms,
                 );
