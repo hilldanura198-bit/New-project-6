@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,13 +19,43 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _email = TextEditingController();
   final _password = TextEditingController();
+  final _phone = TextEditingController();
+  final _otp = TextEditingController();
+  StreamSubscription<AuthState>? _authSubscription;
   bool _loading = false;
 
   @override
+  void initState() {
+    super.initState();
+    final auth = Supabase.instance.client.auth;
+    _authSubscription = auth.onAuthStateChange.listen((data) {
+      if (!mounted) return;
+      if (data.session != null) {
+        _goToHome();
+      }
+    });
+    if (auth.currentSession != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _goToHome();
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    _authSubscription?.cancel();
     _email.dispose();
     _password.dispose();
+    _phone.dispose();
+    _otp.dispose();
     super.dispose();
+  }
+
+  void _goToHome() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const MainShellPage()),
+      (route) => false,
+    );
   }
 
   Future<void> _login() async {
@@ -34,11 +66,6 @@ class _LoginPageState extends State<LoginPage> {
         email: _email.text.trim(),
         password: _password.text,
       );
-      if (!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(builder: (_) => const MainShellPage()),
-        (route) => false,
-      );
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -46,6 +73,61 @@ class _LoginPageState extends State<LoginPage> {
       ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    try {
+      await Supabase.instance.client.auth.signInWithOAuth(OAuthProvider.google);
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
+
+  Future<void> _loginWithPhone() async {
+    if (_phone.text.trim().isEmpty) return;
+    try {
+      await Supabase.instance.client.auth.signInWithOtp(
+        phone: _phone.text.trim(),
+      );
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Masukkan OTP'),
+          content: TextField(
+            controller: _otp,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'Kode OTP'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                await Supabase.instance.client.auth.verifyOTP(
+                  phone: _phone.text.trim(),
+                  token: _otp.text.trim(),
+                  type: OtpType.sms,
+                );
+                if (!context.mounted) return;
+                Navigator.pop(context);
+              },
+              child: const Text('Verifikasi'),
+            ),
+          ],
+        ),
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -102,14 +184,19 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 10),
+            TextField(
+              controller: _phone,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                hintText: 'Phone Number (+628...)',
+                prefixIcon: Icon(Icons.phone_rounded),
+              ),
+            ),
+            const SizedBox(height: 10),
             SizedBox(
               height: 50,
               child: OutlinedButton.icon(
-                onPressed: () async {
-                  await Supabase.instance.client.auth.signInWithOAuth(
-                    OAuthProvider.google,
-                  );
-                },
+                onPressed: _loginWithGoogle,
                 icon: const Icon(Icons.g_mobiledata_rounded),
                 label: const Text('Login with Google'),
               ),
@@ -118,15 +205,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 50,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Login with Phone Number akan tersedia dengan OTP.',
-                      ),
-                    ),
-                  );
-                },
+                onPressed: _loginWithPhone,
                 icon: const Icon(Icons.phone_rounded),
                 label: const Text('Login with Phone Number'),
               ),
