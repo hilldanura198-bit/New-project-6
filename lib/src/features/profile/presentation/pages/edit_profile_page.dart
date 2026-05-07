@@ -70,9 +70,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   Widget build(BuildContext context) {
     final profile = ref.watch(userProfileProvider).valueOrNull;
     if (profile != null && _usernameController.text.isEmpty) {
-      _nameController.text = (profile.username);
+      _nameController.text = profile.fullName;
       _emailController.text = profile.email;
       _usernameController.text = profile.username;
+      _phoneController.text = profile.phone;
       _bioController.text = profile.bio;
     }
 
@@ -133,7 +134,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             _field('Name', _nameController),
             _field('E mail address', _emailController),
             _field('User name', _usernameController),
-            _field('Password', _passwordController, obscure: true),
+            _field(
+              'Password',
+              _passwordController,
+              obscure: true,
+              required: false,
+            ),
             _field('Phone number', _phoneController),
           ],
         ),
@@ -141,7 +147,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     );
   }
 
-  Widget _field(String label, TextEditingController c, {bool obscure = false}) {
+  Widget _field(
+    String label,
+    TextEditingController c, {
+    bool obscure = false,
+    bool required = true,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -152,7 +163,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           TextFormField(
             controller: c,
             obscureText: obscure,
-            validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            validator: (v) =>
+                required && (v == null || v.isEmpty) ? 'Required' : null,
           ),
         ],
       ),
