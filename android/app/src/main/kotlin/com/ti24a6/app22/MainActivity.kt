@@ -1,4 +1,4 @@
-package com.example.arsiva_gallery_art
+package com.ti24a6.app22
 
 import io.flutter.embedding.android.FlutterActivity
 
