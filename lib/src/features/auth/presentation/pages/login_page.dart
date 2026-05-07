@@ -77,14 +77,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithGoogle() async {
-    try {
-      await Supabase.instance.client.auth.signInWithOAuth(OAuthProvider.google);
-    } on AuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Fitur ini akan segera hadir')),
+    );
   }
 
   Future<void> _loginWithPhone() async {
